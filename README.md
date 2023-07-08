@@ -1,6 +1,18 @@
-# mm_lean for WSS2023
+# mm_lean for WSS2023: Meta-Mathematics Project
 
-# Setup (using Lean version 3.21.0 and Windows)
+# Things to Implement
+
+
+
+
+# Things to Show
+
+See also: https://writings.stephenwolfram.com/2020/09/the-empirical-metamathematics-of-euclid-and-beyond/
+
+
+
+
+# Notes on Setup (using Lean version 3.21.0 and Windows)
 
 * Lean installation: I went with Lean 4 per https://leanprover-community.github.io/install/windows.html and specifically 
 ```

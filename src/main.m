@@ -27,6 +27,7 @@ SetAttributes[SelectLeanPremises, HoldFirst];
 
 cache = "";
 
+
 HandleLeanServerResponse[p_ProcessObject] := 
  Module[{msg, line, flag, res}, flag = True; msg = "error"; 
   While[flag, line = ImportString[ReadLine[p], "JSON"]; 
@@ -43,9 +44,11 @@ SendToLeanServer[p_ProcessObject, content_String] :=
 \"dummy.lean\", \"content\":\"``\"}", content];
   WriteLine[p, cmd // ToString]];
 
+
 LeanMode[] :=
  StartProcess[{LeanExecutable, "-j0", "-D pp.unicode=true",
 	       "--server"}];
+
 
 GetLeanProof[p_ProcessObject, name_String] :=
 	Module[{res, content},
@@ -53,11 +56,19 @@ GetLeanProof[p_ProcessObject, name_String] :=
 	       SendToLeanServer[p, content // ToString];
 	       res = HandleLeanServerResponse[p]; ("text" /. res[[1]]) // ToExpression];
 
+
+(* Graph Version - WSS2023 *)
+
+
+
+
+
 GetLeanInfo[p_ProcessObject, name_String] :=
 	Module[{res, content},
 	       content = StringForm["import main imports set_option pp.beta true open tactic.interactive #view_info ``", name];
 	       SendToLeanServer[p, content // ToString];
 	       res = HandleLeanServerResponse[p]; ("text" /. res[[1]]) // ToExpression];
+
 
 ProveUsingLeanTactic[p_ProcessObject, x_, t_String, b_?BooleanQ] :=
 	Module[{res, content},
@@ -67,6 +78,7 @@ ProveUsingLeanTactic[p_ProcessObject, x_, t_String, b_?BooleanQ] :=
 
 ProveUsingLeanTactic[p_,x_,t_] := ProveUsingLeanTactic[p,x,t,False]
 
+
 RunLeanTactic[p_ProcessObject, x_, t_String, b_?BooleanQ] :=
 	Module[{res, content},
 	       content = StringForm["import main run_cmd `1` \\\"`2`\\\" >>= tactic.trace",t,x // OutputFormat];
@@ -74,6 +86,7 @@ RunLeanTactic[p_ProcessObject, x_, t_String, b_?BooleanQ] :=
 	       res = HandleLeanServerResponse[p]; If[b, ("text" /. res[[1]]) // ToExpression, ("text" /. res[[1]])]];
 
 RunLeanTactic[x_,t_,p_]:=RunLeanTactic[x,t,p,False]
+
 
 SelectLeanPremises[p_, e_] := RunLeanTactic[p, e, "find_relevant_facts", False]
 (* RunLeanTactic[p_ProcessObject, x_, t_String, b_?BooleanQ, i_?StringQ] := *)
@@ -87,5 +100,9 @@ SelectLeanPremises[p_, e_] := RunLeanTactic[p, e, "find_relevant_facts", False]
 (* RunLeanTactic[x_,t_,p_,i_String] := RunLeanTactic[x,t,p,False,i] *)
 SetAttributes[RunLeanTactic, HoldRest];
 SetAttributes[ProveUsingLeanTactic, HoldRest];
+
+
+
+
 
 QuitLeanMode[p_ProcessObject] := KillProcess[p];

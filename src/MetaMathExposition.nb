@@ -1,0 +1,2780 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[    109740,       2772]
+NotebookOptionsPosition[    103682,       2666]
+NotebookOutlinePosition[    104114,       2683]
+CellTagsIndexPosition[    104071,       2680]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Empirical Metamathematics: Importing Lean to Mathematica", "Title",
+ CellChangeTimes->{{3.8977397976479125`*^9, 3.8977397990513783`*^9}, {
+  3.8977402193269677`*^9, 
+  3.897740226300557*^9}},ExpressionUUID->"34c625e6-bd11-4cdd-b85a-\
+4c7b61035716"],
+
+Cell[CellGroupData[{
+
+Cell["Intro: Why are Lean and Metamath interesting?", "Section",
+ CellChangeTimes->{{3.8977532484277067`*^9, 3.8977533100621443`*^9}, {
+  3.897768153219461*^9, 
+  3.8977681598659387`*^9}},ExpressionUUID->"9b59177b-9e18-4297-bfc9-\
+2a8e76a09d55"],
+
+Cell["\<\
+From the Project Description: The goal of this project is to do some \
+Metamathematics. The first step will be to work on a Wolfram Language \
+Importer for the Lean Theorem Prover, a currently popular system that blends \
+Interactive and Automated Theorem Proving, two slightly different approaches \
+to finding proofs. Most importantly, Lean draws on the Lean Mathlib \
+collection, made up of thousands of theorems and definitions.\
+\>", "Text",
+ CellChangeTimes->{{3.897740111702156*^9, 3.8977401275615625`*^9}, {
+  3.8977401786924644`*^9, 3.8977402083035364`*^9}, {3.8977494046299295`*^9, 
+  3.897749407499075*^9}, {3.8977497004597836`*^9, 
+  3.897749703241989*^9}},ExpressionUUID->"3703f04f-927b-466f-a765-\
+b9a5ef2be177"],
+
+Cell["\<\
+(Finding a streamlined way to import Lean code then means one can do \
+Metamathematical explorations like comparing classical proofs, say in \
+Euclidean geometry, with their Lean correlates. The second part of this \
+project becomes visualizing these explorations in the form of a poster.)\
+\>", "Text",
+ CellChangeTimes->{
+  3.8977497117410307`*^9, {3.897753320224821*^9, 
+   3.8977533229648676`*^9}},ExpressionUUID->"0d7d7ad4-8a67-415a-a21f-\
+27afd928fedd"],
+
+Cell["\<\
+Quick and automated proof checking can help anyone who might like to \
+outsource their proving! (Personally, I am sometimes pretty bad at proving \
+and/or just don\[CloseCurlyQuote]t put in the time to reach my goals, which \
+are outside of professional mathematics.)\
+\>", "Text",
+ CellChangeTimes->{{3.897749479201956*^9, 3.8977494872512465`*^9}, {
+  3.897749526269266*^9, 3.8977495624049797`*^9}, {3.8977496553919177`*^9, 
+  3.8977496564222097`*^9}, {3.897750032301137*^9, 3.897750047330639*^9}, {
+  3.8977519621253824`*^9, 3.897752009478112*^9}, {3.8977683027893963`*^9, 
+  3.8977683034358635`*^9}},ExpressionUUID->"9e4468ac-cc45-4d4f-ac50-\
+2098a534fbee"],
+
+Cell[TextData[{
+ "My way in is that an institute at my university (",
+ ButtonBox["Research Institute Symbolic Computation",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://risc.jku.at/"], None},
+  ButtonNote->"https://risc.jku.at/"],
+ " at Johannes Kepler University, Linz, Austria) develops a ",
+ ButtonBox["theorem prover",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://www3.risc.jku.at/research/theorema/software/"], None},
+  ButtonNote->"https://www3.risc.jku.at/research/theorema/software/"],
+ " that plugs into Mathematica. Bringing in big, community Math theorem \
+packages could be a good way to advance this project. But what is in such a \
+package, how can I explore it? This brings me to Metamathematics and \
+exploring Lean and Mathlib using these approaches."
+}], "Text",
+ CellChangeTimes->{{3.8977497225005608`*^9, 3.8977498754369783`*^9}, {
+  3.897750058135809*^9, 3.8977500841873045`*^9}, {3.897750197406745*^9, 
+  3.8977502090001645`*^9}, {3.8977520167139893`*^9, 3.8977520280014744`*^9}, {
+  3.897753338981388*^9, 
+  3.897753343845076*^9}},ExpressionUUID->"dc7108a1-f857-4c28-9ffb-\
+80ab2dbc7e7f"],
+
+Cell["\<\
+I end on a note about today\[CloseCurlyQuote]s Large Language Models (LLMs) \
+and Neural Networks and how we might plug and play with Metamath, or a \
+metamathematical language, and these new, emergent tools.\
+\>", "Text",
+ CellChangeTimes->{{3.897753350400688*^9, 
+  3.897753454238132*^9}},ExpressionUUID->"39112d72-479a-427e-b78b-\
+8d814bf6e538"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Lean-Mathematica Bridge: Setup", "Section",
+ CellChangeTimes->{{3.897739851630097*^9, 3.897739869775625*^9}, {
+   3.897740845780554*^9, 3.8977408988120594`*^9}, {3.897741135341025*^9, 
+   3.897741137719508*^9}, 
+   3.8977413131725736`*^9},ExpressionUUID->"f3c30927-25f2-4bbb-8ea4-\
+31733d9ccc7f"],
+
+Cell[TextData[{
+ "A bridge for Mathematica to talk to Lean (and vice versa) already ",
+ ButtonBox["exists",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://robertylewis.com/leanmm/"], None},
+  ButtonNote->"https://robertylewis.com/leanmm/"],
+ " (",
+ ButtonBox["paper version",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://arxiv.org/pdf/1712.09288.pdf"], None},
+  ButtonNote->"https://arxiv.org/pdf/1712.09288.pdf"],
+ "). As a first step, the WSS project extends (",
+ ButtonBox["forks",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/heseltime/mm-lean"], None},
+  ButtonNote->"https://github.com/heseltime/mm-lean"],
+ ") the ",
+ ButtonBox["bridge",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/minchaowu/mm-lean"], None},
+  ButtonNote->"https://github.com/minchaowu/mm-lean"],
+ ", to add some convenience functions that can then be used to explore \
+Mathlib, the core, community-driven effort to build a Lean corpus of \
+theorems.\n\[LineSeparator]But how does the bridge work? The original \
+repository and the fork including the new functionality are on GitHub, but \
+from the Mathematica point of view, we create a Lean-ProcessObject from the \
+externally downloaded executable (see fork-readme for detailed installation \
+instructions)."
+}], "Text",
+ CellChangeTimes->{{3.8977402351261635`*^9, 3.89774036595963*^9}, {
+  3.8977406639613185`*^9, 3.8977406792762156`*^9}, {3.897740919330879*^9, 
+  3.8977409891997023`*^9}, {3.897741035039172*^9, 3.897741132298413*^9}, {
+  3.897741805993437*^9, 3.8977418306588335`*^9}, {3.8977424909690833`*^9, 
+  3.8977425186785917`*^9}, {3.897742572597768*^9, 3.8977425726055984`*^9}, {
+  3.897742604745255*^9, 3.8977426047470493`*^9}, {3.897742641752076*^9, 
+  3.8977426424593163`*^9}},ExpressionUUID->"08d607cc-1c19-45c0-ad43-\
+e0a1c729118e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"LeanExecutable", " ", "=", " ", "\"\<lean\>\""}]], "Input",
+ CellChangeTimes->{{3.8975810157072887`*^9, 3.8975810166935606`*^9}},
+ CellLabel->
+  "In[107]:=",ExpressionUUID->"034629c0-50c4-4a92-a470-e00460d3b162"],
+
+Cell[BoxData["\<\"lean\"\>"], "Output",
+ CellChangeTimes->{3.897581018116537*^9, 3.897638990764197*^9, 
+  3.8977411907812138`*^9},
+ CellLabel->
+  "Out[107]=",ExpressionUUID->"a49b0ea2-4b26-4099-85c2-f444872bde0a"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{
+   RowBox[{"Check", "/", "Set"}], " ", "the", " ", "working", " ", 
+   "directory", " ", "to", " ", "be", " ", 
+   RowBox[{
+    RowBox[{"mm_lean", "/", "src"}], "/"}]}], "  ", "*)"}]], "Input",
+ CellChangeTimes->{{3.780798584145817*^9, 3.780798615721925*^9}, {
+  3.80683930627573*^9, 3.8068393405627327`*^9}, {3.8977412094912643`*^9, 
+  3.89774123046145*^9}},ExpressionUUID->"e235dd9c-342e-461d-9665-\
+8473b4021845"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Directory", "[", "]"}]], "Input",
+ CellChangeTimes->{{3.8068393438335114`*^9, 3.80683934538756*^9}},
+ CellLabel->
+  "In[109]:=",ExpressionUUID->"5b6e816a-0b98-4063-a20e-ad14c70dffdb"],
+
+Cell[BoxData["\<\"C:\\\\Public\\\\WSS2023\\\\mm-lean\\\\src\"\>"], "Output",
+ CellChangeTimes->{3.8975810331660013`*^9, 3.8976389935296044`*^9, 
+  3.897741213786518*^9},
+ CellLabel->
+  "Out[109]=",ExpressionUUID->"3993213c-7586-4e1f-a4f0-020b32343cf9"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"SetDirectory", "[", 
+  "\"\<C:\\\\Public\\\\WSS2023\\\\mm-lean\\\\src\>\"", "]"}]], "Input",
+ CellChangeTimes->{{3.780798313465518*^9, 3.78079831397092*^9}, {
+   3.7807983625464783`*^9, 3.780798367263343*^9}, {3.780799267268783*^9, 
+   3.780799277078808*^9}, {3.784622011530985*^9, 3.784622029976153*^9}, {
+   3.784622075207736*^9, 3.7846220844268503`*^9}, {3.784631873824744*^9, 
+   3.784631936612627*^9}, {3.7846320050813093`*^9, 3.784632005876857*^9}, {
+   3.8049265720036077`*^9, 3.80492658592445*^9}, {3.805173401335939*^9, 
+   3.8051734086868753`*^9}, {3.805177329249885*^9, 3.805177334558298*^9}, 
+   3.8975812133427906`*^9},
+ NumberMarks->False,
+ CellLabel->
+  "In[110]:=",ExpressionUUID->"7724e724-46da-4ca6-a0a5-7ba35f0a5669"],
+
+Cell[BoxData["\<\"C:\\\\Public\\\\WSS2023\\\\mm-lean\\\\src\"\>"], "Output",
+ CellChangeTimes->{3.8975810389974318`*^9, 3.897581215756771*^9, 
+  3.897638995730856*^9, 3.897741222974013*^9},
+ CellLabel->
+  "Out[110]=",ExpressionUUID->"4cb6d147-2e1f-47c1-b586-50de10b96abc"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{"Import", " ", 
+   RowBox[{"main", ".", "m"}]}], " ", "*)"}]], "Input",
+ CellChangeTimes->{{3.897741241420283*^9, 
+  3.8977412504916363`*^9}},ExpressionUUID->"902f42de-0121-4e7e-af97-\
+2959c9da987a"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"<<", "\"\<main.m\>\""}], ";"}]], "Input",
+ CellChangeTimes->{{3.780798944793867*^9, 3.780798948713229*^9}},
+ CellLabel->"In[5]:=",ExpressionUUID->"ed9b07c0-540c-476a-a4d3-3a59e9f7e468"],
+
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{"Create", " ", "ProcessObject"}], " ", "*)"}]], "Input",
+ CellChangeTimes->{{3.897741257531266*^9, 
+  3.897741271726344*^9}},ExpressionUUID->"2e5acb74-a49d-41f3-b63e-\
+07ecedde5ba1"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Lean", "=", 
+  RowBox[{"LeanMode", "[", "]"}]}]], "Input",
+ CellChangeTimes->{{3.7292107682061567`*^9, 3.729210792176735*^9}, {
+  3.7292110654894447`*^9, 3.7292110857282057`*^9}, {3.7292113499000683`*^9, 
+  3.729211383420169*^9}, {3.7292114729156637`*^9, 3.729211545179541*^9}, {
+  3.729211607492135*^9, 3.729211641382194*^9}, {3.729212573292335*^9, 
+  3.7292125792009478`*^9}, {3.7292131279450006`*^9, 3.7292131664852962`*^9}, {
+  3.729243934659246*^9, 3.7292439394021187`*^9}, {3.780798970625388*^9, 
+  3.780798971363224*^9}, {3.805179320448739*^9, 3.805179321831057*^9}},
+ CellLabel->"In[6]:=",ExpressionUUID->"1154699e-78d9-405d-b60b-c59e739f8788"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+   TagBox["ProcessObject",
+    "SummaryHead"], "[", 
+   DynamicModuleBox[{Typeset`open$$ = False, Typeset`embedState$$ = "Ready"}, 
+    TemplateBox[{
+      PaneSelectorBox[{False -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxOpener"], 
+               ImageSizeCache -> {
+                9.771663484610617, {0., 9.771663484610617}}], Appearance -> 
+              None, BaseStyle -> {}, 
+              ButtonFunction :> (Typeset`open$$ = True), Evaluator -> 
+              Automatic, Method -> "Preemptive"], 
+             Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            GridBox[{{
+               RowBox[{
+                 TagBox["\"Program: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["\"lean.exe\"", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"PID: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["5612", "SummaryItem"]}]}}, AutoDelete -> False, 
+             BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}, 
+             GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, 
+             GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {
+              "Columns" -> {{2}}, "Rows" -> {{Automatic}}}]}}, AutoDelete -> 
+          False, BaselinePosition -> {1, 1}, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], True -> 
+        GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxCloser"]], 
+              Appearance -> None, BaseStyle -> {}, 
+              ButtonFunction :> (Typeset`open$$ = False), Evaluator -> 
+              Automatic, Method -> "Preemptive"], 
+             Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            GridBox[{{
+               RowBox[{
+                 TagBox["\"Program: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["\"lean.exe\"", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"PID: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["5612", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Parent PID: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["22236", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"User: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["\"jackh\"", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Path: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                 "\"C:\\\\Users\\\\jackh\\\\.elan\\\\bin\\\\lean.exe\"", 
+                  "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Memory:\"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  
+                  TemplateBox[{
+                   "8.839168`", "\"MB\"", "megabytes", "\"Megabytes\""}, 
+                   "Quantity"], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Threads: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["4", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Start Time: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  TemplateBox[{
+                    RowBox[{"\"Thu 6 Jul 2023 09:30:02\"", 
+                    StyleBox[
+                    RowBox[{"\"GMT\"", "\[InvisibleSpace]", 
+                    StyleBox[
+                    RowBox[{"-", "4"}], NumberMarks -> False, StripOnInput -> 
+                    False]}], FontColor -> GrayLevel[0.5]]}], 
+                    RowBox[{"DateObject", "[", 
+                    RowBox[{
+                    RowBox[{"{", 
+                    
+                    RowBox[{
+                    "2023", ",", "7", ",", "6", ",", "9", ",", "30", ",", 
+                    "2"}], "}"}], ",", "\"Instant\"", ",", "\"Gregorian\"", 
+                    ",", 
+                    RowBox[{"-", "4.`"}]}], "]"}]}, "DateObject", Editable -> 
+                   False], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"System Time: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  
+                  TemplateBox[{
+                   "0.015625`5.", "\"s\"", "seconds", "\"Seconds\""}, 
+                   "Quantity"], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"User Time: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  
+                  TemplateBox[{
+                   "0.015625`5.", "\"s\"", "seconds", "\"Seconds\""}, 
+                   "Quantity"], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Real Time: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  
+                  TemplateBox[{"1.`5.", "\"s\"", "seconds", "\"Seconds\""}, 
+                   "Quantity"], "SummaryItem"]}]}}, AutoDelete -> False, 
+             BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}, 
+             GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, 
+             GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {
+              "Columns" -> {{2}}, "Rows" -> {{Automatic}}}]}}, AutoDelete -> 
+          False, BaselinePosition -> {1, 1}, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}]}, 
+       Dynamic[Typeset`open$$], ImageSize -> Automatic]},
+     "SummaryPanel"],
+    DynamicModuleValues:>{}], "]"}],
+  ProcessObject[<|
+   "ManagedProcess" -> True, "UID" -> 0, "PID" -> 5612, "PPID" -> 22236, 
+    "Program" -> "lean.exe", "Path" -> 
+    "C:\\Users\\jackh\\.elan\\bin\\lean.exe", "User" -> "jackh", "StartTime" -> 
+    DateObject[{2023, 7, 6, 9, 30, 2}, "Instant", "Gregorian", -4.]|>],
+  Editable->False,
+  SelectWithContents->True,
+  Selectable->False]], "Output",
+ CellChangeTimes->{3.8975871211642313`*^9, 3.8975878176609883`*^9, 
+  3.8976390038594103`*^9},
+ CellLabel->"Out[6]=",ExpressionUUID->"23ed5448-86da-481e-8368-51de95e0f231"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ProcessStatus", "[", "Lean", "]"}]], "Input",
+ CellChangeTimes->{{3.805179365688818*^9, 3.805179366626686*^9}},
+ CellLabel->"In[26]:=",ExpressionUUID->"dfb49a64-2f76-4f7e-a6a5-88304d81f2e8"],
+
+Cell[BoxData["\<\"Running\"\>"], "Output",
+ CellChangeTimes->{3.7807917207592373`*^9, 3.7807964393692293`*^9, 
+  3.780796538283403*^9, 3.7807966750237923`*^9, 3.780796903767123*^9, 
+  3.7807976101232347`*^9, 3.780797867648875*^9, 3.780798979079939*^9, 
+  3.784622107054925*^9, 3.784631730676196*^9, 3.78463197177353*^9, 
+  3.8049265969786386`*^9, 3.804927052181733*^9, 3.805108925899788*^9, 
+  3.805172003439999*^9, 3.805177349334076*^9, 3.805179140437757*^9, 
+  3.8051792690120687`*^9, 3.805179369765088*^9, 3.805179422330134*^9, 
+  3.805179930130145*^9, 3.8051800487726583`*^9, 3.805180140271229*^9, 
+  3.805181567002911*^9, 3.80518189872655*^9, 3.805183100324609*^9, 
+  3.805183640525934*^9, 3.805184745055553*^9, 3.806230710045763*^9, 
+  3.8062336846808*^9, 3.806233914735178*^9, 3.806319313845448*^9, 
+  3.806839241676635*^9, 3.806839492062749*^9, 3.897581229579149*^9, 
+  3.897587124273531*^9, 3.8975878200395193`*^9},
+ CellLabel->"Out[26]=",ExpressionUUID->"a8bd6a87-df24-4bd4-978c-9f172708303e"]
+}, Open  ]],
+
+Cell["", "Text",
+ CellChangeTimes->{{3.897741777015646*^9, 
+  3.897741800685342*^9}},ExpressionUUID->"6e2a3cd6-1c06-41f5-98b4-\
+d81076d0a20c"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Lean-Mathematica Bridge: Adding to the Bridge", "Section",
+ CellChangeTimes->{{3.8977412964204407`*^9, 
+  3.897741310370691*^9}},ExpressionUUID->"8e94d68b-5765-4c7f-8cab-\
+c73362a71280"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"leanAssoc", "=", 
+    RowBox[{"CloudGet", "[", "\"\<https://wolfr.am/PL39QRbE\>\"", "]"}]}], 
+   ";"}], " "}]], "Input",
+ CellChangeTimes->{{3.897674841516934*^9, 3.897674860005966*^9}, 
+   3.8976835968946295`*^9},ExpressionUUID->"9e2533a6-a613-4b3a-b32d-\
+585210a51f77"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"leanGraph", "=", 
+    RowBox[{"CloudGet", "[", "\"\<https://wolfr.am/PL3LfaQ4\>\"", "]"}]}], 
+   ";"}], " "}]], "Input",
+ CellChangeTimes->{{3.897674849095024*^9, 3.8976748563424425`*^9}, {
+  3.897683598611519*^9, 
+  3.89768360043857*^9}},ExpressionUUID->"654f1dcf-b9fe-4dcb-b2b5-\
+e09c1dd9a066"],
+
+Cell[TextData[StyleBox["Idea is to use the existing Graph/Association (2020) \
+for now, where a direct/new import from the current Mathlib might be helpful \
+(bridge extension, as a function) later on. Stephen referred me to Mano about \
+how to actually get the data. A comparison of the project in 2020 vs now, \
+2023, might be interesting.",
+ FontSlant->"Italic"]], "Text",
+ CellChangeTimes->{{3.89768139830904*^9, 3.8976814051533203`*^9}, {
+  3.8976814711981907`*^9, 3.8976815732104836`*^9}, {3.897683608680692*^9, 
+  3.8976836107672377`*^9}, {3.8976859810934167`*^9, 3.897685994646456*^9}, {
+  3.8976879186695213`*^9, 
+  3.8976879370722*^9}},ExpressionUUID->"165b69be-09c5-4f58-8676-c20f22fb37e0"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"leanDomains", " ", "=", " ", 
+   RowBox[{"Union", "[", 
+    RowBox[{"Values", "[", "leanAssoc", "]"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", "leanDomains"}], "Input",
+ CellChangeTimes->{{3.89768162721422*^9, 3.8976816274865313`*^9}},
+ CellLabel->"In[43]:=",ExpressionUUID->"6b1c8ce7-f340-4da9-8f6e-324e14a6e07f"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"\<\"algebra\"\>", ",", "\<\"algebraic_geometry\"\>", 
+   ",", "\<\"analysis\"\>", ",", "\<\"category_theory\"\>", 
+   ",", "\<\"combinatorics\"\>", ",", "\<\"computability\"\>", 
+   ",", "\<\"control\"\>", ",", "\<\"data\"\>", ",", "\<\"dynamics\"\>", 
+   ",", "\<\"geometry\"\>", ",", "\<\"init\"\>", ",", "\<\"logic\"\>", 
+   ",", "\<\"meta\"\>", ",", "\<\"number_theory\"\>", ",", "\<\"order\"\>", 
+   ",", "\<\"set_theory\"\>", ",", "\<\"system\"\>", ",", "\<\"tactic\"\>", 
+   ",", "\<\"topology\"\>"}], "}"}]], "Output",
+ CellChangeTimes->{3.8976816279462185`*^9},
+ CellLabel->"Out[44]=",ExpressionUUID->"96734ecc-44ef-4ec8-af2b-4dcf748313bb"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"leanInfrastructure", " ", "=", " ", 
+   RowBox[{"{", 
+    RowBox[{
+    "\"\<init\>\"", ",", " ", "\"\<system\>\"", ",", " ", "\"\<tactic\>\"", 
+     ",", " ", "\"\<data\>\"", ",", " ", "\"\<meta\>\"", ",", " ", 
+     "\"\<control\>\"", ",", " ", "\"\<computability\>\""}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", "leanInfrastructure"}], "Input",
+ CellChangeTimes->{{3.897681615650951*^9, 3.897681619762949*^9}},
+ CellLabel->"In[41]:=",ExpressionUUID->"f1726376-6fb4-48c3-84d1-ca1953d7ac21"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"\<\"init\"\>", ",", "\<\"system\"\>", ",", "\<\"tactic\"\>", 
+   ",", "\<\"data\"\>", ",", "\<\"meta\"\>", ",", "\<\"control\"\>", 
+   ",", "\<\"computability\"\>"}], "}"}]], "Output",
+ CellChangeTimes->{3.897681620587308*^9},
+ CellLabel->"Out[42]=",ExpressionUUID->"4dc228c8-9239-471a-b811-0b87f7585064"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"leanColors", " ", "=", " ", 
+   RowBox[{"Merge", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"AssociationThread", "[", 
+        RowBox[{
+         RowBox[{"Complement", "[", 
+          RowBox[{"leanDomains", ",", " ", "leanInfrastructure"}], "]"}], " ",
+          "\[Rule]", " ", 
+         RowBox[{"Take", "[", 
+          RowBox[{
+           RowBox[{"ColorData", "[", 
+            RowBox[{"54", ",", " ", "\"\<ColorList\>\""}], "]"}], ",", " ", 
+           RowBox[{"Length", "[", 
+            RowBox[{"Complement", "[", 
+             RowBox[{"leanDomains", ",", " ", "leanInfrastructure"}], "]"}], 
+            "]"}]}], "]"}]}], "]"}], ",", " ", 
+       RowBox[{"AssociationThread", "[", 
+        RowBox[{"leanInfrastructure", " ", "\[Rule]", " ", "LightGray"}], 
+        "]"}]}], "}"}], ",", " ", "Identity"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", "leanColors"}], "Input",
+ CellChangeTimes->{{3.8976816441562595`*^9, 3.8976816469967484`*^9}},
+ CellLabel->"In[46]:=",ExpressionUUID->"0a9a8914-fd39-4ea7-844e-d44e8f61824f"],
+
+Cell[BoxData[
+ RowBox[{"\[LeftAssociation]", 
+  RowBox[{
+   RowBox[{"\<\"algebra\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> RGBColor[0.782803, 0.164904, 0.400458]|>,
+      "RGBColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"algebraic_geometry\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> RGBColor[0.909499, 0.613916, 0.204196]|>,
+      "RGBColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"analysis\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> RGBColor[0.806577, 0.385397, 0.762768]|>,
+      "RGBColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"category_theory\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> RGBColor[0.698817, 0.873304, 0.295247]|>,
+      "RGBColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"combinatorics\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> RGBColor[0.378897, 0.873304, 0.787549]|>,
+      "RGBColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"dynamics\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> RGBColor[1, 0.529198, 0.324819]|>,
+      "RGBColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"geometry\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> RGBColor[1, 0.998367, 0.434775]|>,
+      "RGBColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"logic\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> RGBColor[0.873304, 0.150484, 0.255131]|>,
+      "RGBColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"number_theory\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> RGBColor[0.723598, 0.791043, 0.963806]|>,
+      "RGBColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"order\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> RGBColor[0.85037, 0.558389, 0]|>,
+      "RGBColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"set_theory\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> RGBColor[1, 0.998856, 0.00207523]|>,
+      "RGBColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"topology\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> RGBColor[0.273106, 0.542992, 0.495583]|>,
+      "RGBColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"init\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> GrayLevel[0.85]|>,
+      "GrayLevelColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"system\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> GrayLevel[0.85]|>,
+      "GrayLevelColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"tactic\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> GrayLevel[0.85]|>,
+      "GrayLevelColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"data\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> GrayLevel[0.85]|>,
+      "GrayLevelColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"meta\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> GrayLevel[0.85]|>,
+      "GrayLevelColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"control\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> GrayLevel[0.85]|>,
+      "GrayLevelColorSwatchTemplate"], "}"}]}], ",", 
+   RowBox[{"\<\"computability\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     TemplateBox[<|"color" -> GrayLevel[0.85]|>,
+      "GrayLevelColorSwatchTemplate"], "}"}]}]}], 
+  "\[RightAssociation]"}]], "Output",
+ CellChangeTimes->{3.8976816475076275`*^9},
+ CellLabel->"Out[47]=",ExpressionUUID->"986cd082-826b-4843-b097-2feecb1a10b7"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"leanDomainWeights", " ", "=", " ", 
+   RowBox[{"Tally", "[", 
+    RowBox[{"Values", "[", "leanAssoc", "]"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"leanDomainWeights", " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "theorem", " ", "keys", " ", "tallied", " ", "by", " ", "category", " ", 
+    RowBox[{"(", "value", ")"}]}], " ", "*)"}]}]}], "Input",
+ CellChangeTimes->{{3.8976816605218434`*^9, 
+  3.8976816981005096`*^9}},ExpressionUUID->"5239da4b-0365-4c06-bb31-\
+9d4fb1c94c76"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"\<\"algebra\"\>", ",", "8355"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"analysis\"\>", ",", "4021"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"geometry\"\>", ",", "559"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"tactic\"\>", ",", "396"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"init\"\>", ",", "1293"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"data\"\>", ",", "11165"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"computability\"\>", ",", "589"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"combinatorics\"\>", ",", "108"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"order\"\>", ",", "1903"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"topology\"\>", ",", "3220"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"logic\"\>", ",", "483"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"category_theory\"\>", ",", "1834"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"number_theory\"\>", ",", "266"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"set_theory\"\>", ",", "1096"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"dynamics\"\>", ",", "161"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"algebraic_geometry\"\>", ",", "70"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"meta\"\>", ",", "9"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"control\"\>", ",", "161"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"system\"\>", ",", "1"}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.8976816632945237`*^9},
+ CellLabel->"Out[49]=",ExpressionUUID->"07978011-1bb2-46c9-bf08-d571aaeef9df"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"leanEdgeWeights", " ", "=", " ", 
+   RowBox[{"Tally", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"leanAssoc", "[", 
+         RowBox[{"#", "[", 
+          RowBox[{"[", "1", "]"}], "]"}], "]"}], ",", " ", 
+        RowBox[{"leanAssoc", "[", 
+         RowBox[{"#", "[", 
+          RowBox[{"[", "2", "]"}], "]"}], "]"}]}], "}"}], " ", "&"}], " ", "/@",
+      " ", 
+     RowBox[{"EdgeList", "[", "leanGraph", "]"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", "leanEdgeWeights"}], "Input",
+ CellChangeTimes->{{3.89768175279212*^9, 3.897681755662777*^9}},
+ CellLabel->"In[50]:=",ExpressionUUID->"93350352-c6c7-4430-9198-70f56b3f65e4"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"data\"\>", ",", "\<\"init\"\>"}], "}"}], ",", "27512"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"data\"\>", ",", "\<\"data\"\>"}], "}"}], ",", "20902"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"topology\"\>", ",", "\<\"topology\"\>"}], "}"}], ",", 
+     "5055"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebra\"\>", ",", "\<\"algebra\"\>"}], "}"}], ",", 
+     "16771"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"computability\"\>", ",", "\<\"computability\"\>"}], "}"}], 
+     ",", "1870"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"set_theory\"\>", ",", "\<\"set_theory\"\>"}], "}"}], ",", 
+     "2507"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"data\"\>", ",", "\<\"algebra\"\>"}], "}"}], ",", "6184"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"topology\"\>", ",", "\<\"order\"\>"}], "}"}], ",", 
+     "1493"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"init\"\>", ",", "\<\"init\"\>"}], "}"}], ",", "3493"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"tactic\"\>", ",", "\<\"init\"\>"}], "}"}], ",", "1099"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"analysis\"\>", ",", "\<\"init\"\>"}], "}"}], ",", "8734"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebra\"\>", ",", "\<\"init\"\>"}], "}"}], ",", "13441"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"order\"\>", ",", "\<\"init\"\>"}], "}"}], ",", "2843"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"number_theory\"\>", ",", "\<\"init\"\>"}], "}"}], ",", 
+     "1157"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"analysis\"\>", ",", "\<\"analysis\"\>"}], "}"}], ",", 
+     "7831"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebra\"\>", ",", "\<\"data\"\>"}], "}"}], ",", "4175"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"number_theory\"\>", ",", "\<\"algebra\"\>"}], "}"}], ",", 
+     "697"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"geometry\"\>", ",", "\<\"geometry\"\>"}], "}"}], ",", 
+     "954"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"analysis\"\>", ",", "\<\"algebra\"\>"}], "}"}], ",", 
+     "4845"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"geometry\"\>", ",", "\<\"data\"\>"}], "}"}], ",", "671"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"number_theory\"\>", ",", "\<\"number_theory\"\>"}], "}"}], 
+     ",", "446"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"topology\"\>", ",", "\<\"init\"\>"}], "}"}], ",", "5122"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"computability\"\>", ",", "\<\"init\"\>"}], "}"}], ",", 
+     "1706"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"category_theory\"\>", ",", "\<\"init\"\>"}], "}"}], ",", 
+     "1812"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"set_theory\"\>", ",", "\<\"init\"\>"}], "}"}], ",", 
+     "2418"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"geometry\"\>", ",", "\<\"init\"\>"}], "}"}], ",", "1202"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"combinatorics\"\>", ",", "\<\"init\"\>"}], "}"}], ",", 
+     "353"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"dynamics\"\>", ",", "\<\"init\"\>"}], "}"}], ",", "268"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"logic\"\>", ",", "\<\"init\"\>"}], "}"}], ",", "487"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"control\"\>", ",", "\<\"init\"\>"}], "}"}], ",", "447"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebraic_geometry\"\>", ",", "\<\"init\"\>"}], "}"}], ",",
+      "74"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebraic_geometry\"\>", ",", "\<\"algebra\"\>"}], "}"}], 
+     ",", "26"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"order\"\>", ",", "\<\"data\"\>"}], "}"}], ",", "661"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"number_theory\"\>", ",", "\<\"tactic\"\>"}], "}"}], ",", 
+     "544"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"computability\"\>", ",", "\<\"data\"\>"}], "}"}], ",", 
+     "905"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"order\"\>", ",", "\<\"order\"\>"}], "}"}], ",", "3070"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"analysis\"\>", ",", "\<\"tactic\"\>"}], "}"}], ",", 
+     "2073"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"analysis\"\>", ",", "\<\"data\"\>"}], "}"}], ",", "2720"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"analysis\"\>", ",", "\<\"topology\"\>"}], "}"}], ",", 
+     "1643"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"tactic\"\>", ",", "\<\"algebra\"\>"}], "}"}], ",", "421"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"set_theory\"\>", ",", "\<\"algebra\"\>"}], "}"}], ",", 
+     "254"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"tactic\"\>", ",", "\<\"logic\"\>"}], "}"}], ",", "33"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"tactic\"\>", ",", "\<\"data\"\>"}], "}"}], ",", "151"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"order\"\>", ",", "\<\"algebra\"\>"}], "}"}], ",", "69"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"topology\"\>", ",", "\<\"data\"\>"}], "}"}], ",", "2397"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"data\"\>", ",", "\<\"analysis\"\>"}], "}"}], ",", "34"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"analysis\"\>", ",", "\<\"order\"\>"}], "}"}], ",", "853"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"set_theory\"\>", ",", "\<\"data\"\>"}], "}"}], ",", 
+     "303"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"data\"\>", ",", "\<\"tactic\"\>"}], "}"}], ",", "1671"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"category_theory\"\>", ",", "\<\"category_theory\"\>"}], 
+      "}"}], ",", "1462"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"number_theory\"\>", ",", "\<\"data\"\>"}], "}"}], ",", 
+     "417"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"topology\"\>", ",", "\<\"algebra\"\>"}], "}"}], ",", 
+     "809"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"logic\"\>", ",", "\<\"logic\"\>"}], "}"}], ",", "295"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebra\"\>", ",", "\<\"order\"\>"}], "}"}], ",", "656"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"dynamics\"\>", ",", "\<\"algebra\"\>"}], "}"}], ",", 
+     "140"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"data\"\>", ",", "\<\"order\"\>"}], "}"}], ",", "441"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebra\"\>", ",", "\<\"set_theory\"\>"}], "}"}], ",", 
+     "121"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"geometry\"\>", ",", "\<\"topology\"\>"}], "}"}], ",", 
+     "380"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"data\"\>", ",", "\<\"logic\"\>"}], "}"}], ",", "1617"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebraic_geometry\"\>", 
+       ",", "\<\"algebraic_geometry\"\>"}], "}"}], ",", "46"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"dynamics\"\>", ",", "\<\"dynamics\"\>"}], "}"}], ",", 
+     "199"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"topology\"\>", ",", "\<\"logic\"\>"}], "}"}], ",", "335"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebra\"\>", ",", "\<\"logic\"\>"}], "}"}], ",", "658"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"set_theory\"\>", ",", "\<\"order\"\>"}], "}"}], ",", 
+     "49"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"control\"\>", ",", "\<\"control\"\>"}], "}"}], ",", 
+     "128"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"computability\"\>", ",", "\<\"logic\"\>"}], "}"}], ",", 
+     "190"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebraic_geometry\"\>", ",", "\<\"topology\"\>"}], "}"}], 
+     ",", "11"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebra\"\>", ",", "\<\"tactic\"\>"}], "}"}], ",", "655"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"combinatorics\"\>", ",", "\<\"data\"\>"}], "}"}], ",", 
+     "138"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"geometry\"\>", ",", "\<\"algebra\"\>"}], "}"}], ",", 
+     "424"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"geometry\"\>", ",", "\<\"tactic\"\>"}], "}"}], ",", 
+     "167"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"set_theory\"\>", ",", "\<\"logic\"\>"}], "}"}], ",", 
+     "140"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"tactic\"\>", ",", "\<\"tactic\"\>"}], "}"}], ",", "263"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"combinatorics\"\>", ",", "\<\"combinatorics\"\>"}], "}"}], 
+     ",", "114"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"geometry\"\>", ",", "\<\"logic\"\>"}], "}"}], ",", "26"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"analysis\"\>", ",", "\<\"combinatorics\"\>"}], "}"}], ",", 
+     "32"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"order\"\>", ",", "\<\"logic\"\>"}], "}"}], ",", "221"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"data\"\>", ",", "\<\"set_theory\"\>"}], "}"}], ",", "33"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"geometry\"\>", ",", "\<\"analysis\"\>"}], "}"}], ",", 
+     "214"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"category_theory\"\>", ",", "\<\"algebra\"\>"}], "}"}], ",",
+      "53"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebra\"\>", ",", "\<\"control\"\>"}], "}"}], ",", "6"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"topology\"\>", ",", "\<\"control\"\>"}], "}"}], ",", "8"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"dynamics\"\>", ",", "\<\"topology\"\>"}], "}"}], ",", 
+     "44"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"combinatorics\"\>", ",", "\<\"algebra\"\>"}], "}"}], ",", 
+     "42"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"topology\"\>", ",", "\<\"analysis\"\>"}], "}"}], ",", 
+     "23"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"analysis\"\>", ",", "\<\"logic\"\>"}], "}"}], ",", "228"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"topology\"\>", ",", "\<\"tactic\"\>"}], "}"}], ",", 
+     "198"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"category_theory\"\>", ",", "\<\"data\"\>"}], "}"}], ",", 
+     "39"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"topology\"\>", ",", "\<\"category_theory\"\>"}], "}"}], 
+     ",", "34"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebraic_geometry\"\>", ",", "\<\"data\"\>"}], "}"}], ",",
+      "19"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"category_theory\"\>", ",", "\<\"logic\"\>"}], "}"}], ",", 
+     "18"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"dynamics\"\>", ",", "\<\"analysis\"\>"}], "}"}], ",", 
+     "6"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"data\"\>", ",", "\<\"control\"\>"}], "}"}], ",", "35"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebra\"\>", ",", "\<\"category_theory\"\>"}], "}"}], ",",
+      "46"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"combinatorics\"\>", ",", "\<\"logic\"\>"}], "}"}], ",", 
+     "9"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"geometry\"\>", ",", "\<\"order\"\>"}], "}"}], ",", "23"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"dynamics\"\>", ",", "\<\"logic\"\>"}], "}"}], ",", "28"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"dynamics\"\>", ",", "\<\"order\"\>"}], "}"}], ",", "28"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"analysis\"\>", ",", "\<\"set_theory\"\>"}], "}"}], ",", 
+     "2"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"set_theory\"\>", ",", "\<\"tactic\"\>"}], "}"}], ",", 
+     "45"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"data\"\>", ",", "\<\"topology\"\>"}], "}"}], ",", "17"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"computability\"\>", ",", "\<\"algebra\"\>"}], "}"}], ",", 
+     "42"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"control\"\>", ",", "\<\"data\"\>"}], "}"}], ",", "23"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"dynamics\"\>", ",", "\<\"data\"\>"}], "}"}], ",", "22"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebraic_geometry\"\>", ",", "\<\"logic\"\>"}], "}"}], 
+     ",", "3"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"meta\"\>", ",", "\<\"init\"\>"}], "}"}], ",", "4"}], "}"}],
+    ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"system\"\>", ",", "\<\"data\"\>"}], "}"}], ",", "3"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"system\"\>", ",", "\<\"init\"\>"}], "}"}], ",", "2"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"number_theory\"\>", ",", "\<\"order\"\>"}], "}"}], ",", 
+     "5"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"combinatorics\"\>", ",", "\<\"order\"\>"}], "}"}], ",", 
+     "2"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebraic_geometry\"\>", ",", "\<\"category_theory\"\>"}], 
+      "}"}], ",", "11"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebraic_geometry\"\>", ",", "\<\"order\"\>"}], "}"}], 
+     ",", "13"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"number_theory\"\>", ",", "\<\"logic\"\>"}], "}"}], ",", 
+     "24"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"computability\"\>", ",", "\<\"control\"\>"}], "}"}], ",", 
+     "3"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"topology\"\>", ",", "\<\"dynamics\"\>"}], "}"}], ",", 
+     "5"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"system\"\>", ",", "\<\"logic\"\>"}], "}"}], ",", "1"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"category_theory\"\>", ",", "\<\"tactic\"\>"}], "}"}], ",", 
+     "7"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"order\"\>", ",", "\<\"tactic\"\>"}], "}"}], ",", "21"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"dynamics\"\>", ",", "\<\"tactic\"\>"}], "}"}], ",", "2"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"logic\"\>", ",", "\<\"tactic\"\>"}], "}"}], ",", "4"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"combinatorics\"\>", ",", "\<\"tactic\"\>"}], "}"}], ",", 
+     "5"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"logic\"\>", ",", "\<\"data\"\>"}], "}"}], ",", "2"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"control\"\>", ",", "\<\"logic\"\>"}], "}"}], ",", "7"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"algebraic_geometry\"\>", ",", "\<\"tactic\"\>"}], "}"}], 
+     ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"topology\"\>", ",", "\<\"set_theory\"\>"}], "}"}], ",", 
+     "4"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"data\"\>", ",", "\<\"number_theory\"\>"}], "}"}], ",", 
+     "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\<\"order\"\>", ",", "\<\"control\"\>"}], "}"}], ",", "1"}], 
+    "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.8976817567526736`*^9},
+ CellLabel->"Out[51]=",ExpressionUUID->"f5e52d26-86d0-4f5a-8c30-4480e1c0b268"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"leanEdgesOutSimple", " ", "=", " ", 
+   RowBox[{"Append", "[", 
+    RowBox[{
+     RowBox[{"Merge", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"AssociationThread", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"#", "[", 
+             RowBox[{"[", 
+              RowBox[{"1", ",", " ", "1", ",", " ", "1"}], "]"}], "]"}], 
+            "}"}], "\[Rule]", " ", 
+           RowBox[{"Total", "[", 
+            RowBox[{"#", "[", 
+             RowBox[{"[", "2", "]"}], "]"}], "]"}]}], "]"}], " ", "&"}], " ", 
+        "/@", " ", 
+        RowBox[{"(", 
+         RowBox[{"Transpose", " ", "/@", " ", 
+          RowBox[{"GatherBy", "[", 
+           RowBox[{
+            RowBox[{"Select", "[", 
+             RowBox[{"leanEdgeWeights", ",", " ", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"#", "[", 
+                 RowBox[{"[", 
+                  RowBox[{"1", ",", " ", "1"}], "]"}], "]"}], " ", 
+                "\[NotEqual]", " ", 
+                RowBox[{"#", "[", 
+                 RowBox[{"[", 
+                  RowBox[{"1", ",", " ", "2"}], "]"}], "]"}]}], " ", "&"}]}], 
+             "]"}], ",", " ", 
+            RowBox[{
+             RowBox[{"#", "[", 
+              RowBox[{"[", 
+               RowBox[{"1", ",", " ", "1"}], "]"}], "]"}], " ", "&"}]}], 
+           "]"}]}], ")"}]}], ",", " ", "Identity"}], "]"}], ",", " ", 
+     RowBox[{"\"\<init\>\"", " ", "\[Rule]", " ", 
+      RowBox[{"{", "3493", "}"}]}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", "leanEdgesOutSimple"}], "Input",
+ CellChangeTimes->{{3.8976819823537407`*^9, 3.8976819874612675`*^9}},
+ CellLabel->"In[52]:=",ExpressionUUID->"22250361-4bdd-43b6-8e7a-7da87d9662e0"],
+
+Cell[BoxData[
+ RowBox[{"\[LeftAssociation]", 
+  RowBox[{
+   RowBox[{"\<\"data\"\>", "\[Rule]", 
+    RowBox[{"{", "37545", "}"}]}], ",", 
+   RowBox[{"\<\"topology\"\>", "\[Rule]", 
+    RowBox[{"{", "10428", "}"}]}], ",", 
+   RowBox[{"\<\"tactic\"\>", "\[Rule]", 
+    RowBox[{"{", "1704", "}"}]}], ",", 
+   RowBox[{"\<\"analysis\"\>", "\[Rule]", 
+    RowBox[{"{", "21130", "}"}]}], ",", 
+   RowBox[{"\<\"algebra\"\>", "\[Rule]", 
+    RowBox[{"{", "19758", "}"}]}], ",", 
+   RowBox[{"\<\"order\"\>", "\[Rule]", 
+    RowBox[{"{", "3816", "}"}]}], ",", 
+   RowBox[{"\<\"number_theory\"\>", "\[Rule]", 
+    RowBox[{"{", "2844", "}"}]}], ",", 
+   RowBox[{"\<\"geometry\"\>", "\[Rule]", 
+    RowBox[{"{", "3107", "}"}]}], ",", 
+   RowBox[{"\<\"computability\"\>", "\[Rule]", 
+    RowBox[{"{", "2846", "}"}]}], ",", 
+   RowBox[{"\<\"category_theory\"\>", "\[Rule]", 
+    RowBox[{"{", "1929", "}"}]}], ",", 
+   RowBox[{"\<\"set_theory\"\>", "\[Rule]", 
+    RowBox[{"{", "3209", "}"}]}], ",", 
+   RowBox[{"\<\"combinatorics\"\>", "\[Rule]", 
+    RowBox[{"{", "549", "}"}]}], ",", 
+   RowBox[{"\<\"dynamics\"\>", "\[Rule]", 
+    RowBox[{"{", "538", "}"}]}], ",", 
+   RowBox[{"\<\"logic\"\>", "\[Rule]", 
+    RowBox[{"{", "493", "}"}]}], ",", 
+   RowBox[{"\<\"control\"\>", "\[Rule]", 
+    RowBox[{"{", "477", "}"}]}], ",", 
+   RowBox[{"\<\"algebraic_geometry\"\>", "\[Rule]", 
+    RowBox[{"{", "158", "}"}]}], ",", 
+   RowBox[{"\<\"meta\"\>", "\[Rule]", 
+    RowBox[{"{", "4", "}"}]}], ",", 
+   RowBox[{"\<\"system\"\>", "\[Rule]", 
+    RowBox[{"{", "6", "}"}]}], ",", 
+   RowBox[{"\<\"init\"\>", "\[Rule]", 
+    RowBox[{"{", "3493", "}"}]}]}], "\[RightAssociation]"}]], "Output",
+ CellChangeTimes->{3.8976819878084335`*^9},
+ CellLabel->"Out[53]=",ExpressionUUID->"c7ee1269-a0b2-407f-b3ed-5db7aa0a040b"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"leanNormalizedEdgeWeights", " ", "=", " ", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      RowBox[{"DirectedEdge", "[", 
+       RowBox[{
+        RowBox[{"#", "[", 
+         RowBox[{"[", 
+          RowBox[{"1", ",", " ", "1"}], "]"}], "]"}], ",", " ", 
+        RowBox[{"#", "[", 
+         RowBox[{"[", 
+          RowBox[{"1", ",", " ", "2"}], "]"}], "]"}]}], "]"}], " ", "\[Rule]",
+       " ", 
+      RowBox[{
+       RowBox[{"#", "[", 
+        RowBox[{"[", "2", "]"}], "]"}], "/", " ", 
+       RowBox[{"Flatten", "[", 
+        RowBox[{"leanEdgesOutSimple", "[", 
+         RowBox[{"#", "[", 
+          RowBox[{"[", 
+           RowBox[{"1", ",", "1"}], "]"}], "]"}], "]"}], "]"}]}]}], " ", 
+     "&"}], " ", "/@", " ", "leanEdgeWeights"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.8976820244597588`*^9, 3.897682034272625*^9}},
+ CellLabel->"In[56]:=",ExpressionUUID->"4599566d-858f-4cfd-b417-a23fd9c59ed0"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"diskedLine", "[", 
+    RowBox[{"{", 
+     RowBox[{"line_", ",", "radii_"}], "}"}], "]"}], ":=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"RegionIntersection", "[", 
+       RowBox[{
+        RowBox[{"Line", "[", "line", "]"}], ",", 
+        RowBox[{"Circle", "[", 
+         RowBox[{
+          RowBox[{"line", "[", 
+           RowBox[{"[", "1", "]"}], "]"}], ",", 
+          RowBox[{"radii", "[", 
+           RowBox[{"[", "1", "]"}], "]"}]}], "]"}]}], "]"}], "[", 
+      RowBox[{"[", 
+       RowBox[{"1", ",", "1"}], "]"}], "]"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"RegionIntersection", "[", 
+       RowBox[{
+        RowBox[{"Line", "[", "line", "]"}], ",", 
+        RowBox[{"Circle", "[", 
+         RowBox[{
+          RowBox[{"line", "[", 
+           RowBox[{"[", "2", "]"}], "]"}], ",", 
+          RowBox[{"radii", "[", 
+           RowBox[{"[", "2", "]"}], "]"}]}], "]"}]}], "]"}], "[", 
+      RowBox[{"[", 
+       RowBox[{"1", ",", "1"}], "]"}], "]"}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.897682038736001*^9, 3.8976820484781485`*^9}},
+ CellLabel->"In[59]:=",ExpressionUUID->"1378b4e4-22f7-4037-86ed-2d3faed7730a"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"weightedArrow", "[", 
+    RowBox[{"line_", ",", "weight_"}], "]"}], ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "len", ",", "start", ",", "end", ",", "angle", ",", " ", "thick", ",", 
+       " ", "rec", ",", " ", "mid"}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"start", "=", 
+       RowBox[{"line", "[", 
+        RowBox[{"[", "1", "]"}], "]"}]}], ";", " ", 
+      RowBox[{"end", "=", 
+       RowBox[{"line", "[", 
+        RowBox[{"[", "2", "]"}], "]"}]}], ";", " ", 
+      RowBox[{"mid", "=", 
+       RowBox[{"Mean", "[", "line", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"len", "=", 
+       RowBox[{"EuclideanDistance", "[", 
+        RowBox[{"start", ",", "end"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"angle", "=", 
+       RowBox[{"Arg", "[", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"start", "-", "end"}], ")"}], ".", 
+         RowBox[{"{", 
+          RowBox[{"1", ",", "I"}], "}"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"thick", "=", 
+       RowBox[{"weight", "/", "len"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"rec", "=", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"#", "+", "mid"}], "&"}], "/@", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{
+           RowBox[{
+            RowBox[{"RotationMatrix", "[", "angle", "]"}], ".", "#"}], "&"}], 
+          "/@", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"-", "len"}], "/", "2"}], ",", 
+              RowBox[{
+               RowBox[{"-", " ", "thick"}], "/", "2"}]}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"len", "/", "2"}], ",", 
+              RowBox[{
+               RowBox[{"-", " ", "thick"}], "/", "2"}]}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"len", "/", "2"}], ",", " ", 
+              RowBox[{"thick", "/", "2"}]}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"-", "len"}], "/", "2"}], ",", " ", 
+              RowBox[{"thick", "/", "2"}]}], "}"}]}], "}"}]}], ")"}]}]}], ";",
+       "\[IndentingNewLine]", 
+      RowBox[{"Polygon", "[", "rec", "]"}]}]}], "]"}]}], ";"}]], "Input",
+ CellLabel->"In[29]:=",ExpressionUUID->"1e78d29e-9d07-4f7e-9236-0051995e11bb"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["getLeanAssociation[]", "Subtitle",
+ CellChangeTimes->{{3.897768218669301*^9, 
+  3.897768222749958*^9}},ExpressionUUID->"582f3058-033c-4035-abb4-\
+78dde5b159e7"],
+
+Cell["getProofObject[]", "Subtitle",
+ CellChangeTimes->{{3.8977682345555005`*^9, 
+  3.8977682378545427`*^9}},ExpressionUUID->"0c574a72-0448-4705-8a48-\
+274edd7bb232"],
+
+Cell["Meta-Mathematical Explorations of Lean", "Section",
+ CellChangeTimes->{{3.8977414527246747`*^9, 3.8977414663554797`*^9}, {
+  3.897750269924944*^9, 
+  3.8977502732902126`*^9}},ExpressionUUID->"38795a28-6b0c-4ce1-b362-\
+0392173f73ed"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+MathLib: Where are we at in 2023? (Applying getLeanAssociation[])\
+\>", "Subtitle",
+ CellChangeTimes->{{3.8977415517023177`*^9, 3.897741573958657*^9}, {
+  3.8977682474434557`*^9, 
+  3.8977682581818647`*^9}},ExpressionUUID->"e4ada576-926f-46e3-940f-\
+8e8c15306897"],
+
+Cell[TextData[StyleBox["For this type of global question, I can now call on \
+the new ...",
+ FontSlant->"Italic"]], "Text",
+ CellChangeTimes->{{3.8977415781663265`*^9, 
+  3.897741593766512*^9}},ExpressionUUID->"ccff89ba-277a-4fd6-8e4c-\
+4e5fdcd04ba5"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"VertexDelete", "[", 
+  RowBox[{
+   RowBox[{"SimpleGraph", "[", 
+    RowBox[{"Graph", "[", 
+     RowBox[{"leanDomains", ",", " ", 
+      RowBox[{"First", " ", "/@", " ", "leanNormalizedEdgeWeights"}], ",", 
+      " ", 
+      RowBox[{"EdgeStyle", "\[Rule]", 
+       RowBox[{"Thread", "[", 
+        RowBox[{
+         RowBox[{"First", "/@", "leanNormalizedEdgeWeights"}], " ", "\[Rule]",
+          " ", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"AbsoluteThickness", "[", 
+               RowBox[{"20", 
+                RowBox[{
+                 RowBox[{"Last", "[", "#", "]"}], "[", 
+                 RowBox[{"[", "1", "]"}], "]"}]}], "]"}], ",", 
+              RowBox[{"Arrowheads", "[", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"Last", "[", "#", "]"}], "[", 
+                 RowBox[{"[", "1", "]"}], "]"}], "/", "4"}], "]"}], ",", " ", 
+              RowBox[{"GrayLevel", "[", 
+               RowBox[{"0.5", ",", " ", "0.5"}], "]"}]}], "}"}], "&"}], "/@", 
+           "leanNormalizedEdgeWeights"}], ")"}]}], "]"}]}], ",", " ", 
+      RowBox[{"VertexSize", "\[Rule]", 
+       RowBox[{"Thread", "[", 
+        RowBox[{
+         RowBox[{"First", "/@", "leanDomainWeights"}], " ", "\[Rule]", " ", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{"Sqrt", "[", "#", "]"}], "/", "90"}], "&"}], "/@", 
+           RowBox[{"(", 
+            RowBox[{"Last", "/@", "leanDomainWeights"}], ")"}]}], ")"}]}], 
+        "]"}]}], ",", " ", 
+      RowBox[{"VertexStyle", " ", "\[Rule]", " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"#", " ", "\[Rule]", " ", 
+           RowBox[{"{", 
+            RowBox[{"Lighter", " ", "/@", " ", 
+             RowBox[{"leanColors", "[", "#", "]"}]}], "}"}]}], " ", "&"}], 
+         " ", "/@", "  ", "leanDomains"}], ")"}]}], ",", "  ", 
+      RowBox[{"VertexLabels", "\[Rule]", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"\"\<algebra\>\"", " ", "\[Rule]", " ", "\"\<algebra\>\""}], 
+         ",", 
+         RowBox[{
+         "\"\<algebraic_geometry\>\"", " ", "\[Rule]", " ", 
+          "\"\<algebraic geometry\>\""}], ",", 
+         RowBox[{
+         "\"\<analysis\>\"", " ", "\[Rule]", " ", "\"\<analysis\>\""}], ",", 
+         RowBox[{
+         "\"\<category_theory\>\"", " ", "\[Rule]", " ", 
+          "\"\<category theory\>\""}], ",", 
+         RowBox[{
+         "\"\<combinatorics\>\"", " ", "\[Rule]", " ", 
+          "\"\<combinatorics\>\""}], ",", 
+         RowBox[{
+         "\"\<computability\>\"", " ", "\[Rule]", " ", 
+          "\"\<computability\>\""}], ",", 
+         RowBox[{"\"\<control\>\"", " ", "\[Rule]", " ", "\"\<control\>\""}], 
+         ",", 
+         RowBox[{"\"\<data\>\"", " ", "\[Rule]", " ", "\"\<data\>\""}], ",", 
+         RowBox[{
+         "\"\<dynamics\>\"", " ", "\[Rule]", " ", "\"\<dynamics\>\""}], ",", 
+         RowBox[{
+         "\"\<geometry\>\"", " ", "\[Rule]", " ", "\"\<geometry\>\""}], ",", 
+         RowBox[{"\"\<init\>\"", " ", "\[Rule]", " ", "\"\<init\>\""}], ",", 
+         RowBox[{"\"\<logic\>\"", " ", "\[Rule]", " ", "\"\<logic\>\""}], ",", 
+         RowBox[{"\"\<meta\>\"", " ", "\[Rule]", " ", "\"\<meta\>\""}], ",", 
+         RowBox[{
+         "\"\<number_theory\>\"", " ", "\[Rule]", " ", 
+          "\"\<number theory\>\""}], ",", 
+         RowBox[{
+         "\"\<order\>\"", " ", "\[Rule]", " ", "\"\<order theory\>\""}], ",", 
+         RowBox[{
+         "\"\<set_theory\>\"", " ", "\[Rule]", " ", "\"\<set theory\>\""}], 
+         ",", 
+         RowBox[{"\"\<system\>\"", " ", "\[Rule]", " ", "\"\<system\>\""}], 
+         ",", 
+         RowBox[{"\"\<tactic\>\"", " ", "\[Rule]", " ", "\"\<tactic\>\""}], 
+         ",", 
+         RowBox[{
+         "\"\<topology\>\"", " ", "\[Rule]", " ", "\"\<topology\>\""}]}], 
+        "}"}]}], ",", " ", 
+      RowBox[{
+      "GraphLayout", " ", "\[Rule]", " ", 
+       "\"\<SpringElectricalEmbedding\>\""}], ",", " ", 
+      RowBox[{"PerformanceGoal", "\[Rule]", "\"\<Quality\>\""}], ",", " ", 
+      RowBox[{"AspectRatio", "\[Rule]", 
+       RowBox[{"1", "/", "4"}]}]}], "]"}], "]"}], ",", " ", 
+   RowBox[{"{", 
+    RowBox[{
+    "\"\<init\>\"", ",", " ", "\"\<system\>\"", ",", " ", "\"\<tactic\>\"", 
+     ",", " ", "\"\<data\>\"", ",", " ", "\"\<meta\>\"", ",", " ", 
+     "\"\<control\>\"", ",", " ", "\"\<computability\>\""}], "}"}], ",", " ", 
+   RowBox[{"AspectRatio", "\[Rule]", " ", "1"}]}], "]"}]], "Input",
+ CellLabel->"In[84]:=",ExpressionUUID->"cf93546b-af88-4b14-b801-624cbe57a6fa"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{
+      "algebra", "algebraic_geometry", "analysis", "category_theory", 
+       "combinatorics", "dynamics", "geometry", "logic", "number_theory", 
+       "order", "set_theory", "topology"}, {{{5, 10}, {2, 4}, {2, 10}, {6, 
+       10}, {11, 10}, {7, 10}, {9, 10}, {12, 10}, {12, 4}, {12, 6}, {12, 
+       11}, {7, 12}, {2, 12}, {6, 12}, {12, 8}, {11, 8}, {7, 8}, {10, 8}, {4, 
+       8}, {5, 8}, {6, 8}, {2, 8}, {9, 8}, {3, 12}, {3, 10}, {3, 5}, {3, 8}, {
+       3, 11}, {7, 3}, {12, 3}, {6, 3}, {1, 10}, {1, 11}, {1, 8}, {1, 4}, {9, 
+       1}, {3, 1}, {2, 1}, {11, 1}, {10, 1}, {12, 1}, {6, 1}, {7, 1}, {4, 
+       1}, {5, 1}}, Null}, {
+      AspectRatio -> 1, EdgeStyle -> {DirectedEdge["number_theory", "logic"] -> {
+           AbsoluteThickness[
+            Rational[40, 237]], 
+           Arrowheads[
+            Rational[1, 474]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["algebra", "logic"] -> {
+           AbsoluteThickness[
+            Rational[6580, 9879]], 
+           Arrowheads[
+            Rational[329, 39516]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["order", "logic"] -> {
+           AbsoluteThickness[
+            Rational[1105, 954]], 
+           Arrowheads[
+            Rational[221, 15264]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["dynamics", "logic"] -> {
+           AbsoluteThickness[
+            Rational[280, 269]], 
+           Arrowheads[
+            Rational[7, 538]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["topology", "set_theory"] -> {
+           AbsoluteThickness[
+            Rational[20, 2607]], 
+           Arrowheads[
+            Rational[1, 10428]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["category_theory", "algebra"] -> {
+           AbsoluteThickness[
+            Rational[1060, 1929]], 
+           Arrowheads[
+            Rational[53, 7716]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["combinatorics", "order"] -> {
+           AbsoluteThickness[
+            Rational[40, 549]], 
+           Arrowheads[
+            Rational[1, 1098]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["topology", "analysis"] -> {
+           AbsoluteThickness[
+            Rational[115, 2607]], 
+           Arrowheads[
+            Rational[23, 41712]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["dynamics", "algebra"] -> {
+           AbsoluteThickness[
+            Rational[1400, 269]], 
+           Arrowheads[
+            Rational[35, 538]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["combinatorics", "algebra"] -> {
+           AbsoluteThickness[
+            Rational[280, 183]], 
+           Arrowheads[
+            Rational[7, 366]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["geometry", "analysis"] -> {
+           AbsoluteThickness[
+            Rational[4280, 3107]], 
+           Arrowheads[
+            Rational[107, 6214]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["number_theory", "algebra"] -> {
+           AbsoluteThickness[
+            Rational[3485, 711]], 
+           Arrowheads[
+            Rational[697, 11376]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["order", "algebra"] -> {
+           AbsoluteThickness[
+            Rational[115, 318]], 
+           Arrowheads[
+            Rational[23, 5088]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["set_theory", "algebra"] -> {
+           AbsoluteThickness[
+            Rational[5080, 3209]], 
+           Arrowheads[
+            Rational[127, 6418]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["topology", "logic"] -> {
+           AbsoluteThickness[
+            Rational[1675, 2607]], 
+           Arrowheads[
+            Rational[335, 41712]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["analysis", "topology"] -> {
+           AbsoluteThickness[
+            Rational[3286, 2113]], 
+           Arrowheads[
+            Rational[1643, 84520]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["number_theory", "order"] -> {
+           AbsoluteThickness[
+            Rational[25, 711]], 
+           Arrowheads[
+            Rational[5, 11376]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["topology", "category_theory"] -> {
+           AbsoluteThickness[
+            Rational[170, 2607]], 
+           Arrowheads[
+            Rational[17, 20856]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["category_theory", "logic"] -> {
+           AbsoluteThickness[
+            Rational[120, 643]], 
+           Arrowheads[
+            Rational[3, 1286]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["algebraic_geometry", "order"] -> {
+           AbsoluteThickness[
+            Rational[130, 79]], 
+           Arrowheads[
+            Rational[13, 632]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["analysis", "set_theory"] -> {
+           AbsoluteThickness[
+            Rational[4, 2113]], 
+           Arrowheads[
+            Rational[1, 42260]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["analysis", "combinatorics"] -> {
+           AbsoluteThickness[
+            Rational[64, 2113]], 
+           Arrowheads[
+            Rational[4, 10565]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["dynamics", "analysis"] -> {
+           AbsoluteThickness[
+            Rational[60, 269]], 
+           Arrowheads[
+            Rational[3, 1076]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["algebra", "set_theory"] -> {
+           AbsoluteThickness[
+            Rational[1210, 9879]], 
+           Arrowheads[
+            Rational[121, 79032]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["analysis", "order"] -> {
+           AbsoluteThickness[
+            Rational[1706, 2113]], 
+           Arrowheads[
+            Rational[853, 84520]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["algebraic_geometry", "logic"] -> {
+           AbsoluteThickness[
+            Rational[30, 79]], 
+           Arrowheads[
+            Rational[3, 632]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["geometry", "topology"] -> {
+           AbsoluteThickness[
+            Rational[7600, 3107]], 
+           Arrowheads[
+            Rational[95, 3107]], 
+           GrayLevel[0.5, 0.5]}, 
+         DirectedEdge["algebraic_geometry", "category_theory"] -> {
+           AbsoluteThickness[
+            Rational[110, 79]], 
+           Arrowheads[
+            Rational[11, 632]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["topology", "dynamics"] -> {
+           AbsoluteThickness[
+            Rational[25, 2607]], 
+           Arrowheads[
+            Rational[5, 41712]], 
+           GrayLevel[0.5, 0.5]}, 
+         DirectedEdge["algebraic_geometry", "topology"] -> {
+           AbsoluteThickness[
+            Rational[110, 79]], 
+           Arrowheads[
+            Rational[11, 632]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["set_theory", "order"] -> {
+           AbsoluteThickness[
+            Rational[980, 3209]], 
+           Arrowheads[
+            Rational[49, 12836]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["geometry", "algebra"] -> {
+           AbsoluteThickness[
+            Rational[8480, 3107]], 
+           Arrowheads[
+            Rational[106, 3107]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["analysis", "logic"] -> {
+           AbsoluteThickness[
+            Rational[456, 2113]], 
+           Arrowheads[
+            Rational[57, 21130]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["geometry", "order"] -> {
+           AbsoluteThickness[
+            Rational[460, 3107]], 
+           Arrowheads[
+            Rational[23, 12428]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["topology", "order"] -> {
+           AbsoluteThickness[
+            Rational[7465, 2607]], 
+           Arrowheads[
+            Rational[1493, 41712]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["analysis", "algebra"] -> {
+           AbsoluteThickness[
+            Rational[9690, 2113]], 
+           Arrowheads[
+            Rational[969, 16904]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["combinatorics", "logic"] -> {
+           AbsoluteThickness[
+            Rational[20, 61]], 
+           Arrowheads[
+            Rational[1, 244]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["dynamics", "topology"] -> {
+           AbsoluteThickness[
+            Rational[440, 269]], 
+           Arrowheads[
+            Rational[11, 538]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["dynamics", "order"] -> {
+           AbsoluteThickness[
+            Rational[280, 269]], 
+           Arrowheads[
+            Rational[7, 538]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["topology", "algebra"] -> {
+           AbsoluteThickness[
+            Rational[4045, 2607]], 
+           Arrowheads[
+            Rational[809, 41712]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["set_theory", "logic"] -> {
+           AbsoluteThickness[
+            Rational[2800, 3209]], 
+           Arrowheads[
+            Rational[35, 3209]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["algebra", "order"] -> {
+           AbsoluteThickness[
+            Rational[6560, 9879]], 
+           Arrowheads[
+            Rational[82, 9879]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["geometry", "logic"] -> {
+           AbsoluteThickness[
+            Rational[40, 239]], 
+           Arrowheads[
+            Rational[1, 478]], 
+           GrayLevel[0.5, 0.5]}, DirectedEdge["algebra", "category_theory"] -> {
+           AbsoluteThickness[
+            Rational[460, 9879]], 
+           Arrowheads[
+            Rational[23, 39516]], 
+           GrayLevel[0.5, 0.5]}, 
+         DirectedEdge["algebraic_geometry", "algebra"] -> {
+           AbsoluteThickness[
+            Rational[260, 79]], 
+           Arrowheads[
+            Rational[13, 316]], 
+           GrayLevel[0.5, 0.5]}}, GraphLayout -> "SpringElectricalEmbedding", 
+       PerformanceGoal -> "Quality", 
+       VertexLabels -> {
+        "number_theory" -> "number theory", "category_theory" -> 
+         "category theory", "set_theory" -> "set theory", "geometry" -> 
+         "geometry", "analysis" -> "analysis", "logic" -> "logic", "order" -> 
+         "order theory", "algebra" -> "algebra", "algebraic_geometry" -> 
+         "algebraic geometry", "topology" -> "topology", "dynamics" -> 
+         "dynamics", "combinatorics" -> "combinatorics"}, 
+       VertexSize -> {
+        "category_theory" -> Rational[1, 45] Rational[917, 2]^Rational[1, 2], 
+         "analysis" -> Rational[1, 90] 4021^Rational[1, 2], "combinatorics" -> 
+         Rational[1, 5] 3^Rational[-1, 2], "algebra" -> 
+         Rational[1, 6] Rational[557, 15]^Rational[1, 2], "set_theory" -> 
+         Rational[1, 45] 274^Rational[1, 2], "topology" -> 
+         Rational[1, 9] Rational[161, 5]^Rational[1, 2], "logic" -> 
+         Rational[1, 30] Rational[161, 3]^Rational[1, 2], "dynamics" -> 
+         Rational[1, 90] 161^Rational[1, 2], "geometry" -> 
+         Rational[1, 90] 559^Rational[1, 2], "order" -> 
+         Rational[1, 90] 1903^Rational[1, 2], "algebraic_geometry" -> 
+         Rational[1, 9] Rational[7, 10]^Rational[1, 2], "number_theory" -> 
+         Rational[1, 45] Rational[133, 2]^Rational[1, 2]}, 
+       VertexStyle -> {"dynamics" -> {{
+            RGBColor[1, 0.686132, 0.5498793333333334]}}, "set_theory" -> {{
+            RGBColor[1, 0.9992373333333333, 0.33471681999999997`]}}, 
+         "order" -> {{
+            RGBColor[0.9002466666666666, 0.7055926666666666, 
+             Rational[1, 3]]}}, "algebra" -> {{
+            RGBColor[0.855202, 0.44326933333333335`, 0.6003053333333332]}}, 
+         "combinatorics" -> {{
+            RGBColor[0.5859313333333334, 0.915536, 0.8583660000000001]}}, 
+         "analysis" -> {{
+            RGBColor[
+            0.8710513333333333, 0.5902646666666667, 0.8418453333333333]}}, 
+         "category_theory" -> {{
+            RGBColor[0.7992113333333334, 0.915536, 0.5301646666666666]}}, 
+         "algebraic_geometry" -> {{
+            RGBColor[0.939666, 0.7426106666666666, 0.46946399999999994`]}}, 
+         "number_theory" -> {{
+            RGBColor[0.815732, 0.8606953333333334, 0.9758706666666667]}}, 
+         "topology" -> {{
+            RGBColor[0.515404, 0.695328, 0.6637219999999999]}}, "logic" -> {{
+            RGBColor[0.915536, 0.433656, 0.5034206666666666]}}, 
+         "geometry" -> {{
+            RGBColor[1, 0.9989113333333334, 0.6231833333333333]}}}}]]}, 
+    TagBox[GraphicsGroupBox[{
+       {Hue[0.6, 0.7, 0.5], Opacity[0.7], Arrowheads[Medium], 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[460, 9879], 0.0465634173499342]], Opacity[0.5], Arrowheads[
+          Rational[23, 39516]], 
+         ArrowBox[
+          BezierCurveBox[{
+           DynamicLocation["VertexID$1", Automatic, Center], {
+            1.8410548603586254`, 2.126991496665714}, DynamicLocation[
+            "VertexID$4", Automatic, Center]}]]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[6580, 9879], 0.666059317744711]], Opacity[0.5], Arrowheads[
+          Rational[329, 39516]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$1", Automatic, Center], DynamicLocation[
+           "VertexID$8", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[6560, 9879], 0.6640348213381921]], Opacity[0.5], 
+         Arrowheads[
+          Rational[82, 9879]], 
+         ArrowBox[
+          BezierCurveBox[{
+           DynamicLocation["VertexID$1", Automatic, Center], {
+            1.1203775788683008`, 1.4994097275361986`}, DynamicLocation[
+            "VertexID$10", Automatic, Center]}]]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[1210, 9879], 0.12248203259439215`]], Opacity[0.5], 
+         Arrowheads[
+          Rational[121, 79032]], 
+         ArrowBox[
+          BezierCurveBox[{
+           DynamicLocation["VertexID$1", Automatic, Center], {
+            1.054735258924432, 1.0332511838979046`}, DynamicLocation[
+            "VertexID$11", Automatic, Center]}]]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[260, 79], 3.2911392405063293`]], Opacity[0.5], Arrowheads[
+          Rational[13, 316]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$2", Automatic, Center], DynamicLocation[
+           "VertexID$1", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[110, 79], 1.3924050632911393`]], Opacity[0.5], Arrowheads[
+          Rational[11, 632]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$2", Automatic, Center], DynamicLocation[
+           "VertexID$4", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[30, 79], 0.379746835443038]], Opacity[0.5], Arrowheads[
+          Rational[3, 632]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$2", Automatic, Center], DynamicLocation[
+           "VertexID$8", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[130, 79], 1.6455696202531647`]], Opacity[0.5], Arrowheads[
+          Rational[13, 632]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$2", Automatic, Center], DynamicLocation[
+           "VertexID$10", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[110, 79], 1.3924050632911393`]], Opacity[0.5], Arrowheads[
+          Rational[11, 632]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$2", Automatic, Center], DynamicLocation[
+           "VertexID$12", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[9690, 2113], 4.585896829152863]], Opacity[0.5], Arrowheads[
+          Rational[969, 16904]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$3", Automatic, Center], DynamicLocation[
+           "VertexID$1", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[64, 2113], 0.03028868906767629]], Opacity[0.5], Arrowheads[
+          Rational[4, 10565]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$3", Automatic, Center], DynamicLocation[
+           "VertexID$5", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[456, 2113], 0.21580690960719356`]], Opacity[0.5], 
+         Arrowheads[
+          Rational[57, 21130]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$3", Automatic, Center], DynamicLocation[
+           "VertexID$8", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[1706, 2113], 0.807382867960246]], Opacity[0.5], Arrowheads[
+          Rational[853, 84520]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$3", Automatic, Center], DynamicLocation[
+           "VertexID$10", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[4, 2113], 0.001893043066729768]], Opacity[0.5], Arrowheads[
+          Rational[1, 42260]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$3", Automatic, Center], DynamicLocation[
+           "VertexID$11", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[3286, 2113], 1.5551348793185045`]], Opacity[0.5], 
+         Arrowheads[
+          Rational[1643, 84520]], 
+         ArrowBox[
+          BezierCurveBox[{
+           DynamicLocation["VertexID$3", Automatic, Center], {
+            1.3341747337347534`, 1.012421393527495}, DynamicLocation[
+            "VertexID$12", Automatic, Center]}]]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[1060, 1929], 0.5495075168481078]], Opacity[0.5], 
+         Arrowheads[
+          Rational[53, 7716]], 
+         ArrowBox[
+          BezierCurveBox[{
+           DynamicLocation["VertexID$4", Automatic, Center], {
+            1.9414119404047387`, 1.7179712025658291`}, DynamicLocation[
+            "VertexID$1", Automatic, Center]}]]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[120, 643], 0.18662519440124417`]], Opacity[0.5], 
+         Arrowheads[
+          Rational[3, 1286]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$4", Automatic, Center], DynamicLocation[
+           "VertexID$8", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[280, 183], 1.530054644808743]], Opacity[0.5], Arrowheads[
+          Rational[7, 366]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$5", Automatic, Center], DynamicLocation[
+           "VertexID$1", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[20, 61], 0.32786885245901637`]], Opacity[0.5], Arrowheads[
+          Rational[1, 244]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$5", Automatic, Center], DynamicLocation[
+           "VertexID$8", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[40, 549], 0.07285974499089254]], Opacity[0.5], Arrowheads[
+          Rational[1, 1098]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$5", Automatic, Center], DynamicLocation[
+           "VertexID$10", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[1400, 269], 5.204460966542751]], Opacity[0.5], Arrowheads[
+          Rational[35, 538]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$6", Automatic, Center], DynamicLocation[
+           "VertexID$1", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[60, 269], 0.22304832713754646`]], Opacity[0.5], Arrowheads[
+          Rational[3, 1076]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$6", Automatic, Center], DynamicLocation[
+           "VertexID$3", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[280, 269], 1.0408921933085502`]], Opacity[0.5], Arrowheads[
+          Rational[7, 538]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$6", Automatic, Center], DynamicLocation[
+           "VertexID$8", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[280, 269], 1.0408921933085502`]], Opacity[0.5], Arrowheads[
+          Rational[7, 538]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$6", Automatic, Center], DynamicLocation[
+           "VertexID$10", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[440, 269], 1.6356877323420074`]], Opacity[0.5], Arrowheads[
+          Rational[11, 538]], 
+         ArrowBox[
+          BezierCurveBox[{
+           DynamicLocation["VertexID$6", Automatic, Center], {
+            1.7497819416801457`, 0.7170336551906722}, DynamicLocation[
+            "VertexID$12", Automatic, Center]}]]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[8480, 3107], 2.729320888316704]], Opacity[0.5], Arrowheads[
+          Rational[106, 3107]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$7", Automatic, Center], DynamicLocation[
+           "VertexID$1", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[4280, 3107], 1.3775345992919215`]], Opacity[0.5], 
+         Arrowheads[
+          Rational[107, 6214]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$7", Automatic, Center], DynamicLocation[
+           "VertexID$3", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[40, 239], 0.16736401673640167`]], Opacity[0.5], Arrowheads[
+          Rational[1, 478]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$7", Automatic, Center], DynamicLocation[
+           "VertexID$8", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[460, 3107], 0.14805278403604763`]], Opacity[0.5], 
+         Arrowheads[
+          Rational[23, 12428]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$7", Automatic, Center], DynamicLocation[
+           "VertexID$10", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[7600, 3107], 2.4460894753781783`]], Opacity[0.5], 
+         Arrowheads[
+          Rational[95, 3107]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$7", Automatic, Center], DynamicLocation[
+           "VertexID$12", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[3485, 711], 4.90154711673699]], Opacity[0.5], Arrowheads[
+          Rational[697, 11376]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$9", Automatic, Center], DynamicLocation[
+           "VertexID$1", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[40, 237], 0.16877637130801687`]], Opacity[0.5], Arrowheads[
+          Rational[1, 474]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$9", Automatic, Center], DynamicLocation[
+           "VertexID$8", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[25, 711], 0.035161744022503515`]], Opacity[0.5], 
+         Arrowheads[
+          Rational[5, 11376]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$9", Automatic, Center], DynamicLocation[
+           "VertexID$10", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[115, 318], 0.36163522012578614`]], Opacity[0.5], 
+         Arrowheads[
+          Rational[23, 5088]], 
+         ArrowBox[
+          BezierCurveBox[{
+           DynamicLocation["VertexID$10", Automatic, Center], {
+            0.9889106726684717, 1.6406668950474368`}, DynamicLocation[
+            "VertexID$1", Automatic, Center]}]]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[1105, 954], 1.1582809224318658`]], Opacity[0.5], 
+         Arrowheads[
+          Rational[221, 15264]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$10", Automatic, Center], DynamicLocation[
+           "VertexID$8", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[5080, 3209], 1.5830476784044873`]], Opacity[0.5], 
+         Arrowheads[
+          Rational[127, 6418]], 
+         ArrowBox[
+          BezierCurveBox[{
+           DynamicLocation["VertexID$11", Automatic, Center], {
+            0.6593886873428576, 1.3044705786464048`}, DynamicLocation[
+            "VertexID$1", Automatic, Center]}]]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[2800, 3209], 0.8725459644749143]], Opacity[0.5], 
+         Arrowheads[
+          Rational[35, 3209]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$11", Automatic, Center], DynamicLocation[
+           "VertexID$8", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[980, 3209], 0.30539108756622]], Opacity[0.5], Arrowheads[
+          Rational[49, 12836]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$11", Automatic, Center], DynamicLocation[
+           "VertexID$10", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[4045, 2607], 1.5515918680475642`]], Opacity[0.5], 
+         Arrowheads[
+          Rational[809, 41712]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$12", Automatic, Center], DynamicLocation[
+           "VertexID$1", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[115, 2607], 0.04411200613732259]], Opacity[0.5], 
+         Arrowheads[
+          Rational[23, 41712]], 
+         ArrowBox[
+          BezierCurveBox[{
+           DynamicLocation["VertexID$12", Automatic, Center], {
+            1.4801868917751275`, 0.7400561305045885}, DynamicLocation[
+            "VertexID$3", Automatic, Center]}]]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[170, 2607], 0.06520905255082471]], Opacity[0.5], 
+         Arrowheads[
+          Rational[17, 20856]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$12", Automatic, Center], DynamicLocation[
+           "VertexID$4", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[25, 2607], 0.009589566551591868]], Opacity[0.5], 
+         Arrowheads[
+          Rational[5, 41712]], 
+         ArrowBox[
+          BezierCurveBox[{
+           DynamicLocation["VertexID$12", Automatic, Center], {
+            1.989993637320657, 0.7490199160991985}, DynamicLocation[
+            "VertexID$6", Automatic, Center]}]]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[1675, 2607], 0.6425009589566552]], Opacity[0.5], 
+         Arrowheads[
+          Rational[335, 41712]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$12", Automatic, Center], DynamicLocation[
+           "VertexID$8", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[7465, 2607], 2.863444572305332]], Opacity[0.5], Arrowheads[
+          Rational[1493, 41712]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$12", Automatic, Center], DynamicLocation[
+           "VertexID$10", Automatic, Center]}]}, 
+        {GrayLevel[0.5], AbsoluteThickness[
+          NCache[
+           Rational[20, 2607], 0.007671653241273495]], Opacity[0.5], 
+         Arrowheads[
+          Rational[1, 10428]], 
+         ArrowBox[{
+          DynamicLocation["VertexID$12", Automatic, Center], DynamicLocation[
+           "VertexID$11", Automatic, Center]}]}}, 
+       {Hue[0.6, 0.2, 0.8], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+        TagBox[{
+          TagBox[
+           {RGBColor[0.855202, 0.44326933333333335`, 0.6003053333333332], 
+            DiskBox[{1.2693980263845972`, 1.7699080340519617`}, 
+             0.21402699181282422]},
+           "DynamicName",
+           BoxID -> "VertexID$1"], 
+          InsetBox["\<\"algebra\"\>", Dynamic[
+           DynamicLocation[
+             "VertexID$1", Automatic, {Left, Bottom}] + (
+              DynamicLocation["VertexID$1", Automatic, {Right, Top}] - 
+              DynamicLocation["VertexID$1", Automatic, {Left, Bottom}]) {
+              0.4753780073499857, 1.199566835604678}], ImageScaled[{0.5263807064107295, -0.2495358952907265}],
+           BaseStyle->"Graphics"]},
+         "DynamicName",
+         BoxID -> "VertexLabelID$1"], 
+        TagBox[{
+          TagBox[
+           {RGBColor[0.939666, 0.7426106666666666, 0.46946399999999994`], 
+            DiskBox[{1.861563493723402, 2.5130687743787856`}, 
+             0.019590446766565]},
+           "DynamicName",
+           BoxID -> "VertexID$2"], 
+          InsetBox["\<\"algebraic geometry\"\>", Dynamic[
+           DynamicLocation[
+             "VertexID$2", Automatic, {Left, Bottom}] + (
+              DynamicLocation["VertexID$2", Automatic, {Right, Top}] - 
+              DynamicLocation["VertexID$2", Automatic, {Left, Bottom}]) {
+              0.41292051986981543`, 1.1945625703565206`}], ImageScaled[{0.5932994429966256, -0.2441741825248438}],
+           BaseStyle->"Graphics"]},
+         "DynamicName",
+         BoxID -> "VertexLabelID$2"], 
+        TagBox[{
+          TagBox[
+           {RGBColor[
+            0.8710513333333333, 0.5902646666666667, 0.8418453333333333], 
+            DiskBox[{0.9931026908652156, 0.654255828130177}, 
+             0.14847808475852853]},
+           "DynamicName",
+           BoxID -> "VertexID$3"], 
+          InsetBox["\<\"analysis\"\>", Dynamic[
+           DynamicLocation[
+             "VertexID$3", Automatic, {Left, Bottom}] + (
+              DynamicLocation["VertexID$3", Automatic, {Right, Top}] - 
+              DynamicLocation["VertexID$3", Automatic, {Left, Bottom}]) {
+              0.17421310374075727`, -0.11956670199888031`}], ImageScaled[{0.8490573888491888, 1.1638214664273718}],
+           BaseStyle->"Graphics"]},
+         "DynamicName",
+         BoxID -> "VertexLabelID$3"], 
+        TagBox[{
+          TagBox[
+           {RGBColor[0.7992113333333334, 0.915536, 0.5301646666666666], 
+            DiskBox[{2.5130687743787856`, 2.075054665179592}, 
+             0.1002755345947194]},
+           "DynamicName",
+           BoxID -> "VertexID$4"], 
+          InsetBox["\<\"category theory\"\>", Dynamic[
+           DynamicLocation[
+             "VertexID$4", Automatic, {Left, Bottom}] + (
+              DynamicLocation["VertexID$4", Automatic, {Right, Top}] - 
+              DynamicLocation["VertexID$4", Automatic, {Left, Bottom}]) {
+              1.1885222396179733`, 0.626242328683568}], ImageScaled[{-0.23770239959068584, 0.3647403621247487}],
+           BaseStyle->"Graphics"]},
+         "DynamicName",
+         BoxID -> "VertexLabelID$4"], 
+        TagBox[{
+          TagBox[
+           {RGBColor[0.5859313333333334, 0.915536, 0.8583660000000001], 
+            DiskBox[{0.6345815516499065, 2.4607483831473203`}, 
+             0.02433364669032533]},
+           "DynamicName",
+           BoxID -> "VertexID$5"], 
+          InsetBox["\<\"combinatorics\"\>", Dynamic[
+           DynamicLocation[
+             "VertexID$5", Automatic, {Left, Bottom}] + (
+              DynamicLocation["VertexID$5", Automatic, {Right, Top}] - 
+              DynamicLocation["VertexID$5", Automatic, {Left, Bottom}]) {
+              0.18634160569177416`, 1.1257942247096768`}], ImageScaled[{0.8360625653302419, -0.17049381218893955}],
+           BaseStyle->"Graphics"]},
+         "DynamicName",
+         BoxID -> "VertexLabelID$5"], 
+        TagBox[{
+          TagBox[
+           {RGBColor[1, 0.686132, 0.5498793333333334], 
+            DiskBox[{1.9185166443561266`, 0.3678318753879549}, 
+             0.02971038354483697]},
+           "DynamicName",
+           BoxID -> "VertexID$6"], 
+          InsetBox["\<\"dynamics\"\>", Dynamic[
+           DynamicLocation[
+             "VertexID$6", Automatic, {Left, Bottom}] + (
+              DynamicLocation["VertexID$6", Automatic, {Right, Top}] - 
+              DynamicLocation["VertexID$6", Automatic, {Left, Bottom}]) {
+              0.9517599157185324, -0.03470831165223576}], ImageScaled[{0.015971518873001522, 1.0729017624845387}],
+           BaseStyle->"Graphics"]},
+         "DynamicName",
+         BoxID -> "VertexLabelID$6"], 
+        TagBox[{
+          TagBox[
+           {RGBColor[1, 0.9989113333333334, 0.6231833333333333], 
+            DiskBox[{1.3061277366612962`, 0.}, 0.05536065556526481]},
+           "DynamicName",
+           BoxID -> "VertexID$7"], 
+          InsetBox["\<\"geometry\"\>", Dynamic[
+           DynamicLocation[
+             "VertexID$7", Automatic, {Left, Bottom}] + (
+              DynamicLocation["VertexID$7", Automatic, {Right, Top}] - 
+              DynamicLocation["VertexID$7", Automatic, {Left, Bottom}]) {
+              0.502682649023147, -0.19999485954842455`}], ImageScaled[{0.49712573318948544, 1.249994492373312}],
+           BaseStyle->"Graphics"]},
+         "DynamicName",
+         BoxID -> "VertexLabelID$7"], 
+        TagBox[{
+          TagBox[
+           {RGBColor[0.915536, 0.433656, 0.5034206666666666], 
+            DiskBox[{1.338428804696711, 1.3541284529990942`}, 
+             0.051459893812015954]},
+           "DynamicName",
+           BoxID -> "VertexID$8"], 
+          InsetBox["\<\"logic\"\>", Dynamic[
+           DynamicLocation[
+             "VertexID$8", Automatic, {Left, Bottom}] + (
+              DynamicLocation["VertexID$8", Automatic, {Right, Top}] - 
+              DynamicLocation["VertexID$8", Automatic, {Left, Bottom}]) {
+              1.1996517116462027`, 0.5220790033864464}], ImageScaled[{-0.24962683390664586, 0.4763439249430932}],
+           BaseStyle->"Graphics"]},
+         "DynamicName",
+         BoxID -> "VertexLabelID$8"], 
+        TagBox[{
+          TagBox[
+           {RGBColor[0.815732, 0.8606953333333334, 0.9758706666666667], 
+            DiskBox[{0., 2.0512531587378016`}, 0.038188811151327356]},
+           "DynamicName",
+           BoxID -> "VertexID$9"], 
+          InsetBox["\<\"number theory\"\>", Dynamic[
+           DynamicLocation[
+             "VertexID$9", Automatic, {Left, Bottom}] + (
+              DynamicLocation["VertexID$9", Automatic, {Right, Top}] - 
+              DynamicLocation[
+              "VertexID$9", Automatic, {
+               Left, Bottom}]) {-0.13039279459820063`, 0.8043105724727138}], 
+           ImageScaled[{1.175420851355215, 0.17395295806494943}],
+           BaseStyle->"Graphics"]},
+         "DynamicName",
+         BoxID -> "VertexLabelID$9"], 
+        TagBox[{
+          TagBox[
+           {RGBColor[0.9002466666666666, 0.7055926666666666, 
+             NCache[
+              Rational[1, 3], 0.3333333333333333]], 
+            DiskBox[{0.8398902251521916, 1.3701685885316979`}, 
+             0.10214443592911625]},
+           "DynamicName",
+           BoxID -> "VertexID$10"], 
+          InsetBox["\<\"order theory\"\>", Dynamic[
+           DynamicLocation[
+             "VertexID$10", Automatic, {Left, Bottom}] + (
+              DynamicLocation["VertexID$10", Automatic, {Right, Top}] - 
+              DynamicLocation[
+              "VertexID$10", Automatic, {
+               Left, Bottom}]) {-0.18374897896644826`, 0.3500422267358595}], 
+           ImageScaled[{1.232588191749766, 0.6606690427830076}],
+           BaseStyle->"Graphics"]},
+         "DynamicName",
+         BoxID -> "VertexLabelID$10"], 
+        TagBox[{
+          TagBox[
+           {RGBColor[1, 0.9992373333333333, 0.33471681999999997`], 
+            DiskBox[{0.4447259198826977, 0.567813728492357}, 
+             0.07751764983785714]},
+           "DynamicName",
+           BoxID -> "VertexID$11"], 
+          InsetBox["\<\"set theory\"\>", Dynamic[
+           DynamicLocation[
+             "VertexID$11", Automatic, {Left, Bottom}] + (
+              DynamicLocation["VertexID$11", Automatic, {Right, Top}] - 
+              DynamicLocation[
+              "VertexID$11", Automatic, {
+               Left, Bottom}]) {-0.06365224668808356, 0.08491429221969632}], 
+           ImageScaled[{1.1039131214515185, 0.9447346869074679}],
+           BaseStyle->"Graphics"]},
+         "DynamicName",
+         BoxID -> "VertexLabelID$11"], 
+        TagBox[{
+          TagBox[
+           {RGBColor[0.515404, 0.695328, 0.6637219999999999], 
+            DiskBox[{1.8212589346446744`, 1.0982216959019113`}, 
+             0.13286887448769324]},
+           "DynamicName",
+           BoxID -> "VertexID$12"], 
+          InsetBox["\<\"topology\"\>", Dynamic[
+           DynamicLocation[
+             "VertexID$12", Automatic, {Left, Bottom}] + (
+              DynamicLocation["VertexID$12", Automatic, {Right, Top}] - 
+              DynamicLocation["VertexID$12", Automatic, {Left, Bottom}]) {
+              1.1796158844073936`, 0.33230310181414735`}], ImageScaled[{-0.22815987615077882, 0.6796752480562709}],
+           BaseStyle->"Graphics"]},
+         "DynamicName",
+         BoxID -> "VertexLabelID$12"]}}],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None]], "Output",
+ CellChangeTimes->{3.8976748788002853`*^9, 3.89768390294984*^9},
+ CellLabel->"Out[84]=",ExpressionUUID->"176a5361-bfa5-4053-86b8-b54e09d27ce2"]
+}, Open  ]],
+
+Cell[TextData[StyleBox["Compare 2020 and 2023, add tabular representation, \
+perhaps, or similar.",
+ FontSlant->"Italic"]], "Text",
+ CellChangeTimes->{{3.8977427969379187`*^9, 
+  3.8977428131243343`*^9}},ExpressionUUID->"ac898872-e56c-4da5-8f67-\
+f893ddde2de3"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Finding a meta-mathematical language for theorems: Using getProofObject[]\
+\>", "Subtitle",
+ CellChangeTimes->{{3.897742890699031*^9, 3.8977429115692005`*^9}, {
+  3.8977682628299723`*^9, 
+  3.897768278974897*^9}},ExpressionUUID->"4ab323c1-eae6-4ad1-8a89-\
+1b80008a5172"],
+
+Cell["\<\
+Metamathematics provides a formalized way to think about certain qualities of \
+proofs like being \[OpenCurlyDoubleQuote]...\[CloseCurlyDoubleQuote] or \
+\[OpenCurlyDoubleQuote]...\[CloseCurlyDoubleQuote]. Here\[CloseCurlyQuote]s \
+an example using Mathlib.\
+\>", "Text",
+ CellChangeTimes->{{3.897742956392455*^9, 3.897742961588719*^9}, 
+   3.8977430941667604`*^9, {3.8977433166477284`*^9, 3.897743331202482*^9}, {
+   3.897752132792283*^9, 3.897752172129203*^9}, {3.897752222459244*^9, 
+   3.8977522444622293`*^9}},ExpressionUUID->"5d70668a-907c-4ffa-824b-\
+8ceafad9d404"],
+
+Cell[TextData[{
+ "With LLM\[CloseCurlyQuote]s recent rise to prominence, this kind of \
+metamathematical language (word choices) as well as metamathematical \
+programming languages like Lean might be particularly fruitful: one can \
+imagine Neural Networks exploring these metamathematical theorem spaces in \
+ways approaching how humans do mathematics: But I defer to Stephen Wolfram on \
+the point of ",
+ ButtonBox["broader implications",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://writings.stephenwolfram.com/2020/09/the-empirical-\
+metamathematics-of-euclid-and-beyond/#the-future-of-empirical-\
+metamathematics"], None},
+  ButtonNote->
+   "https://writings.stephenwolfram.com/2020/09/the-empirical-metamathematics-\
+of-euclid-and-beyond/#the-future-of-empirical-metamathematics"],
+ "."
+}], "Text",
+ CellChangeTimes->{{3.89775232095354*^9, 3.8977523759817095`*^9}, {
+  3.897752535259223*^9, 3.897752559573824*^9}, {3.8977526042690306`*^9, 
+  3.897752671002557*^9}, {3.8977527717246675`*^9, 
+  3.8977527717278047`*^9}},ExpressionUUID->"837c319c-c69c-4d65-9687-\
+a5855f8330be"]
+}, Closed]]
+}, Open  ]]
+},
+WindowSize->{1237, 753},
+WindowMargins->{{-5.5, Automatic}, {Automatic, -5.5}},
+Magnification:>0.9 Inherited,
+FrontEndVersion->"13.3 for Microsoft Windows (64-bit) (June 3, 2023)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"3198535e-4089-4fcf-b258-88b17a02d89d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 254, 4, 88, "Title",ExpressionUUID->"34c625e6-bd11-4cdd-b85a-4c7b61035716"],
+Cell[CellGroupData[{
+Cell[859, 30, 245, 4, 59, "Section",ExpressionUUID->"9b59177b-9e18-4297-bfc9-2a8e76a09d55"],
+Cell[1107, 36, 736, 12, 72, "Text",ExpressionUUID->"3703f04f-927b-466f-a765-b9a5ef2be177"],
+Cell[1846, 50, 469, 9, 52, "Text",ExpressionUUID->"0d7d7ad4-8a67-415a-a21f-27afd928fedd"],
+Cell[2318, 61, 670, 11, 52, "Text",ExpressionUUID->"9e4468ac-cc45-4d4f-ac50-2098a534fbee"],
+Cell[2991, 74, 1139, 23, 72, "Text",ExpressionUUID->"dc7108a1-f857-4c28-9ffb-80ab2dbc7e7f"],
+Cell[4133, 99, 358, 7, 31, "Text",ExpressionUUID->"39112d72-479a-427e-b78b-8d814bf6e538"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4528, 111, 302, 5, 59, "Section",ExpressionUUID->"f3c30927-25f2-4bbb-8ea4-31733d9ccc7f"],
+Cell[4833, 118, 1853, 40, 114, "Text",ExpressionUUID->"08d607cc-1c19-45c0-ad43-e0a1c729118e"],
+Cell[CellGroupData[{
+Cell[6711, 162, 236, 4, 25, "Input",ExpressionUUID->"034629c0-50c4-4a92-a470-e00460d3b162"],
+Cell[6950, 168, 213, 4, 28, "Output",ExpressionUUID->"a49b0ea2-4b26-4099-85c2-f444872bde0a"]
+}, Open  ]],
+Cell[7178, 175, 462, 10, 25, "Input",ExpressionUUID->"e235dd9c-342e-461d-9665-8473b4021845"],
+Cell[CellGroupData[{
+Cell[7665, 189, 207, 4, 25, "Input",ExpressionUUID->"5b6e816a-0b98-4063-a20e-ad14c70dffdb"],
+Cell[7875, 195, 252, 4, 28, "Output",ExpressionUUID->"3993213c-7586-4e1f-a4f0-020b32343cf9"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8164, 204, 760, 13, 25, "Input",ExpressionUUID->"7724e724-46da-4ca6-a0a5-7ba35f0a5669"],
+Cell[8927, 219, 272, 4, 28, "Output",ExpressionUUID->"4cb6d147-2e1f-47c1-b586-50de10b96abc"]
+}, Open  ]],
+Cell[9214, 226, 244, 6, 25, "Input",ExpressionUUID->"902f42de-0121-4e7e-af97-2959c9da987a"],
+Cell[9461, 234, 220, 4, 25, "Input",ExpressionUUID->"ed9b07c0-540c-476a-a4d3-3a59e9f7e468"],
+Cell[9684, 240, 227, 5, 25, "Input",ExpressionUUID->"2e5acb74-a49d-41f3-b63e-07ecedde5ba1"],
+Cell[CellGroupData[{
+Cell[9936, 249, 676, 10, 25, "Input",ExpressionUUID->"1154699e-78d9-405d-b60b-c59e739f8788"],
+Cell[10615, 261, 7431, 162, 57, "Output",ExpressionUUID->"23ed5448-86da-481e-8368-51de95e0f231"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18083, 428, 214, 3, 25, "Input",ExpressionUUID->"dfb49a64-2f76-4f7e-a6a5-88304d81f2e8"],
+Cell[18300, 433, 1003, 14, 28, "Output",ExpressionUUID->"a8bd6a87-df24-4bd4-978c-9f172708303e"]
+}, Open  ]],
+Cell[19318, 450, 142, 3, 31, "Text",ExpressionUUID->"6e2a3cd6-1c06-41f5-98b4-d81076d0a20c"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[19497, 458, 192, 3, 47, "Section",ExpressionUUID->"8e94d68b-5765-4c7f-8cab-c73362a71280"],
+Cell[19692, 463, 318, 8, 25, "Input",ExpressionUUID->"9e2533a6-a613-4b3a-b32d-585210a51f77"],
+Cell[20013, 473, 343, 9, 25, "Input",ExpressionUUID->"654f1dcf-b9fe-4dcb-b2b5-e09c1dd9a066"],
+Cell[20359, 484, 701, 10, 52, "Text",ExpressionUUID->"165b69be-09c5-4f58-8676-c20f22fb37e0"],
+Cell[CellGroupData[{
+Cell[21085, 498, 352, 7, 43, "Input",ExpressionUUID->"6b1c8ce7-f340-4da9-8f6e-324e14a6e07f"],
+Cell[21440, 507, 689, 11, 47, "Output",ExpressionUUID->"96734ecc-44ef-4ec8-af2b-4dcf748313bb"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22166, 523, 528, 10, 43, "Input",ExpressionUUID->"f1726376-6fb4-48c3-84d1-ca1953d7ac21"],
+Cell[22697, 535, 345, 6, 28, "Output",ExpressionUUID->"4dc228c8-9239-471a-b811-0b87f7585064"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[23079, 546, 1086, 25, 60, "Input",ExpressionUUID->"0a9a8914-fd39-4ea7-844e-d44e8f61824f"],
+Cell[24168, 573, 3517, 81, 47, "Output",ExpressionUUID->"986cd082-826b-4843-b097-2feecb1a10b7"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[27722, 659, 525, 13, 43, "Input",ExpressionUUID->"5239da4b-0365-4c06-bb31-9d4fb1c94c76"],
+Cell[28250, 674, 1634, 42, 47, "Output",ExpressionUUID->"07978011-1bb2-46c9-bf08-d571aaeef9df"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[29921, 721, 705, 18, 43, "Input",ExpressionUUID->"93350352-c6c7-4430-9198-70f56b3f65e4"],
+Cell[30629, 741, 19054, 639, 406, "Output",ExpressionUUID->"f5e52d26-86d0-4f5a-8c30-4480e1c0b268"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[49720, 1385, 1753, 45, 77, "Input",ExpressionUUID->"22250361-4bdd-43b6-8e7a-7da87d9662e0"],
+Cell[51476, 1432, 1791, 42, 64, "Output",ExpressionUUID->"c7ee1269-a0b2-407f-b3ed-5db7aa0a040b"]
+}, Open  ]],
+Cell[53282, 1477, 935, 25, 25, "Input",ExpressionUUID->"4599566d-858f-4cfd-b417-a23fd9c59ed0"],
+Cell[54220, 1504, 1215, 33, 43, "Input",ExpressionUUID->"1378b4e4-22f7-4037-86ed-2d3faed7730a"],
+Cell[55438, 1539, 2490, 67, 129, "Input",ExpressionUUID->"1e78d29e-9d07-4f7e-9236-0051995e11bb"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[57965, 1611, 166, 3, 47, "Subtitle",ExpressionUUID->"582f3058-033c-4035-abb4-78dde5b159e7"],
+Cell[58134, 1616, 166, 3, 47, "Subtitle",ExpressionUUID->"0c574a72-0448-4705-8a48-274edd7bb232"],
+Cell[58303, 1621, 238, 4, 59, "Section",ExpressionUUID->"38795a28-6b0c-4ce1-b362-0392173f73ed"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[58578, 1630, 274, 6, 47, "Subtitle",ExpressionUUID->"e4ada576-926f-46e3-940f-8e8c15306897"],
+Cell[58855, 1638, 251, 5, 31, "Text",ExpressionUUID->"ccff89ba-277a-4fd6-8e4c-4e5fdcd04ba5"],
+Cell[CellGroupData[{
+Cell[59131, 1647, 4664, 108, 180, "Input",ExpressionUUID->"cf93546b-af88-4b14-b801-624cbe57a6fa"],
+Cell[63798, 1757, 37580, 850, 215, "Output",ExpressionUUID->"176a5361-bfa5-4053-86b8-b54e09d27ce2"]
+}, Open  ]],
+Cell[101393, 2610, 261, 5, 31, "Text",ExpressionUUID->"ac898872-e56c-4da5-8f67-f893ddde2de3"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[101691, 2620, 280, 6, 47, "Subtitle",ExpressionUUID->"4ab323c1-eae6-4ad1-8a89-1b80008a5172"],
+Cell[101974, 2628, 582, 10, 31, "Text",ExpressionUUID->"5d70668a-907c-4ffa-824b-8ceafad9d404"],
+Cell[102559, 2640, 1095, 22, 52, "Text",ExpressionUUID->"837c319c-c69c-4d65-9687-a5855f8330be"]
+}, Closed]]
+}, Open  ]]
+}
+]
+*)
+
