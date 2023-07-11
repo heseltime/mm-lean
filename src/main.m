@@ -95,6 +95,25 @@ getLeanDepth[proofCell_] :=
 getLeanMaxID[proofCell_] := Max[VertexList[getLeanTree[proofCell]]]
 
 
+getLeanAxioms[proofCell_] := Sort[Select[VertexList[getLeanTree[proofCell]], VertexOutDegree[getLeanTree[proofCell], #] == 0 &][[All,1]]]
+
+getLeanNumberOfAxioms[proofCell_] := Length[getLeanAxioms[proofCell]]
+
+getLeanNumberOfAxiomsUnique[proofCell_] := Length[DeleteDuplicates[getLeanAxioms[proofCell]]]
+
+
+vertexShapeFunction[{x_, y_}, name_, {w_, h_}] := 
+  Block[{leaves}, 
+   leaves = 
+    Select[VertexList[graph], VertexOutDegree[graph, #] == 0 &];
+   If[MemberQ[leaves, name], {Green, Disk[{x, y}, 0.1]}, {Blue, 
+     Rectangle[{x, y} - .1, {x, y} + .1]}]];
+
+showLeanAxioms[proofCell_] := TreeGraph[getLeanTree[proofCell], 
+  VertexShapeFunction -> vertexShapeFunction, 
+  EdgeShapeFunction -> {{"HalfFilledArrow", "ArrowSize" -> 0}}]
+
+
 (* End of Tree Version *)
 
 

@@ -20,7 +20,7 @@ Notes on the setup:
 * The "leanproject" command is only available in Lean 3! (Referenced in the upstream project.) See: https://leanprover-community.github.io/leanproject.html
 * "lean --path" to check correct path settings
 
-# Note on the Python Functionalit
+# Note on the Python Functionality
 
 To use the add-on Python scraping functionality, textops is required (globally or in a virtual environment). Python3 is already required by the Lean bridge foundational package.
 
