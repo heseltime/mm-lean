@@ -79,10 +79,10 @@ subproofs[
 subproofs[proof_] := {};
 
 getLeanTree[proof_] := 
- Tree[proofID[proof], proofStructure /@ subproofs[proof]]
+ Tree[proofID[proof], getLeanTree /@ subproofs[proof]]
 
 getLeanTreeLeft[proof_] := 
- Tree[proofID[proof], proofStructure /@ subproofs[proof], 
+ Tree[proofID[proof], getLeanTree /@ subproofs[proof], 
   TreeLayout -> Left]
 
 
@@ -102,16 +102,18 @@ getLeanNumberOfAxioms[proofCell_] := Length[getLeanAxioms[proofCell]]
 getLeanNumberOfAxiomsUnique[proofCell_] := Length[DeleteDuplicates[getLeanAxioms[proofCell]]]
 
 
-vertexShapeFunction[{x_, y_}, name_, {w_, h_}] := 
-  Block[{leaves}, 
-   leaves = 
-    Select[VertexList[graph], VertexOutDegree[graph, #] == 0 &];
-   If[MemberQ[leaves, name], {Green, Disk[{x, y}, 0.1]}, {Blue, 
-     Rectangle[{x, y} - .1, {x, y} + .1]}]];
-
-showLeanAxioms[proofCell_] := TreeGraph[getLeanTree[proofCell], 
-  VertexShapeFunction -> vertexShapeFunction, 
-  EdgeShapeFunction -> {{"HalfFilledArrow", "ArrowSize" -> 0}}]
+showLeanAxioms[proofCell_] := 
+ Module[{graph, vertexShapeFunction}, 
+  graph = TreeGraph[getLeanTree[proofCell]];
+  vertexShapeFunction[{x_, y_}, name_, {w_, h_}] := 
+   Block[{leaves}, 
+    leaves = 
+     Select[VertexList[graph], VertexOutDegree[graph, #] == 0 &];
+    If[MemberQ[leaves, name], {Green, Disk[{x, y}, 0.1]}, {Blue, 
+      Rectangle[{x, y} - .1, {x, y} + .1]}]];
+  TreeGraph[getLeanTree[proofCell], 
+   VertexShapeFunction -> vertexShapeFunction, 
+   EdgeShapeFunction -> {{"HalfFilledArrow", "ArrowSize" -> 0}}]]
 
 
 (* End of Tree Version *)
