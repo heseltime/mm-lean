@@ -57,10 +57,45 @@ GetLeanProof[p_ProcessObject, name_String] :=
 	       res = HandleLeanServerResponse[p]; ("text" /. res[[1]]) // ToExpression];
 
 
-(* Graph Version - WSS2023 *)
+(* Tree Version - WSS2023 *)
+ 
+(* Dummy version: getLeanTree[proofCell_] := 
+ Tree[24, {0, 
+   Tree[23, {1, 
+     Tree[22, {2, 
+       Tree[21, {3, 
+         Tree[20, {4, 
+           Tree[19, {Tree[8, {5, Tree[7, {5, Tree[6, {3}]}]}], 
+             Tree[18, {Tree[
+                17, {10, Tree[16, {11, Tree[15, {10, 14, 13}]}]}]}], 
+             4}]}]}]}]}]}]*)
+
+proofID[Grid[{___, {ID, id_}, ___}, ___]] := id;
+
+subproofs[
+   Grid[{___, {Proofs, 
+      OpenerView[{Arguments, 
+        Column[subproofs_, ___]}, ___]}, ___}, ___]] := subproofs;
+subproofs[proof_] := {};
+
+getLeanTree[proof_] := 
+ Tree[proofID[proof], proofStructure /@ subproofs[proof]]
+
+getLeanTreeLeft[proof_] := 
+ Tree[proofID[proof], proofStructure /@ subproofs[proof], 
+  TreeLayout -> Left]
 
 
+getLeanSize[proofCell_] := 
+ leanTree = Module[{leanTree}, TreeSize[getLeanTree[proofCell]]]
 
+getLeanDepth[proofCell_] := 
+ leanTree = Module[{leanTree}, TreeDepth[getLeanTree[proofCell]]]
+
+getLeanMaxID[proofCell_] := Max[VertexList[getLeanTree[proofCell]]]
+
+
+(* End of Tree Version *)
 
 
 GetLeanInfo[p_ProcessObject, name_String] :=
@@ -100,8 +135,6 @@ SelectLeanPremises[p_, e_] := RunLeanTactic[p, e, "find_relevant_facts", False]
 (* RunLeanTactic[x_,t_,p_,i_String] := RunLeanTactic[x,t,p,False,i] *)
 SetAttributes[RunLeanTactic, HoldRest];
 SetAttributes[ProveUsingLeanTactic, HoldRest];
-
-
 
 
 
