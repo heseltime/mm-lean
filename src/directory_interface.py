@@ -1,5 +1,6 @@
 import os
 import re
+import argparse
 
 def count_files(path, regex):
     regObj = re.compile(regex)
@@ -26,6 +27,15 @@ def count_occurrences(path, regex):
                 count += len(matches)
     return count
 
-print(count_occurrences('C:\\Public\\WSS2023\\mathlib\\src', '(theorem|lemma)'))
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('directory', help='Directory to search in')
+    args = parser.parse_args()
 
-# make callable with dir argument?
+    regex = '(theorem|lemma)'
+    #return count_occurrences(args.directory, regex)
+    print(f'Count of occurrences of "{regex}" in "{args.directory}":', count_occurrences(args.directory, regex))
+
+if __name__ == '__main__':
+    main()
+    
