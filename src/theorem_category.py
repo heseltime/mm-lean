@@ -1,1 +1,0 @@
-# make callable with theorem name argument: return category from directory name
