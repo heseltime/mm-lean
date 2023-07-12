@@ -78,12 +78,23 @@ subproofs[
         Column[subproofs_, ___]}, ___]}, ___}, ___]] := subproofs;
 subproofs[proof_] := {};
 
+(*getLeanTreeStandardStyle[proof_] := 
+ Tree[proofID[proof], getLeanTree /@ subproofs[proof]]*) (* Style does not reset completely. *)
+
 getLeanTree[proof_] := 
- Tree[proofID[proof], getLeanTree /@ subproofs[proof]]
+ Tree[proofID[proof], getLeanTree /@ subproofs[proof], 
+  TreeElementLabelStyle -> 
+ All -> Directive[White, 16, FontFamily -> "Times New Roman"],
+  TreeElementStyle -> 
+ All -> Directive[EdgeForm[Black], RGBColor["#B6094A"]]]
 
 getLeanTreeLeft[proof_] := 
  Tree[proofID[proof], getLeanTree /@ subproofs[proof], 
-  TreeLayout -> Left]
+  TreeLayout -> Left,
+  TreeElementLabelStyle -> 
+ All -> Directive[White, 16, FontFamily -> "Times New Roman"],
+  TreeElementStyle -> 
+ All -> Directive[EdgeForm[Black], RGBColor["#B6094A"]]]
 
 
 getLeanSize[proofCell_] := 
